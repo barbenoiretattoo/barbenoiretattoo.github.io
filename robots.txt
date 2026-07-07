@@ -4,5 +4,5 @@
 User-agent: *
 Allow: /
 
-# Remplacer par votre domaine réel une fois le site en ligne :
-Sitemap: https://www.barbenoire-tattoo.fr/sitemap.xml
+# Adresse du plan du site :
+Sitemap: https://barbenoiretattoo.github.io/sitemap.xml
