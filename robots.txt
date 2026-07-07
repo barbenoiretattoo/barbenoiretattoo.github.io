@@ -1,0 +1,8 @@
+# robots.txt — Barbe Noire Tattoo
+# À placer à la racine du site (https://votredomaine.fr/robots.txt)
+
+User-agent: *
+Allow: /
+
+# Remplacer par votre domaine réel une fois le site en ligne :
+Sitemap: https://www.barbenoire-tattoo.fr/sitemap.xml

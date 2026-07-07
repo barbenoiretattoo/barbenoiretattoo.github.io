@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- sitemap.xml — Barbe Noire Tattoo
+     À placer à la racine du site, puis à soumettre dans Google Search Console.
+     Remplacer https://www.barbenoire-tattoo.fr par votre domaine réel. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.barbenoire-tattoo.fr/</loc>
+    <lastmod>2026-07-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
