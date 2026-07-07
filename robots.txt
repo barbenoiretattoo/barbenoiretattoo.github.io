@@ -5,4 +5,4 @@ User-agent: *
 Allow: /
 
 # Adresse du plan du site :
-Sitemap: https://barbenoiretattoo.github.io/sitemap.xml
+Sitemap: https://www.barbenoiretattoo.com/sitemap.xml
