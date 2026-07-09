@@ -416,19 +416,22 @@ section{padding:130px 0}
   color:var(--bone-dim);
 }
 .photo-caption em{color:var(--brass)}
-.about-photo{margin-bottom:48px}
+.about-photo{
+  float:right;width:min(46%,250px);
+  margin:6px 0 20px 30px;
+}
 .about-photo .site-photo{border:1px solid var(--line-soft)}
 .about-photo img{aspect-ratio:4/3}
 
-/* bandeau panoramique de l'atelier, pleine largeur */
+/* bandeau panoramique de l'atelier : photo entière, en fine banderole */
 .atelier-band{margin-top:110px}
 .atelier-band .site-photo{
   border-top:1px solid var(--line-soft);
   border-bottom:1px solid var(--line-soft);
 }
-.atelier-band img{height:clamp(240px,34vw,420px)}
+.atelier-band img{width:100%;height:auto}
 .atelier-band .photo-caption{margin-top:22px}
-.atelier-band .dot-divider{margin:0 auto 14px;width:max-content}
+.atelier-band .dot-divider{margin:14px auto 0;width:max-content}
 
 /* ════════════ PROCESSUS ════════════ */
 #processus{background:var(--ink-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
@@ -703,9 +706,8 @@ footer .copyright{opacity:.7}
   .gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .gallery-item::after{display:none}
   .gallery-nav{gap:20px;margin-top:40px}
-  .about-photo{margin-bottom:36px}
+  .about-photo{width:48%;margin:4px 0 14px 18px}
   .atelier-band{margin-top:64px}
-  .atelier-band img{height:clamp(200px,44vw,300px)}
   .contact-buttons{flex-direction:column;align-items:stretch}
   .btn-social{justify-content:center}
   .modal-box{padding:38px 24px}
@@ -821,17 +823,17 @@ footer .copyright{opacity:.7}
     </div>
     <div class="about-grid">
       <div class="about-text reveal">
+        <figure class="about-photo" id="photoDessin">
+          <button class="site-photo" data-full="atelier-dessin.jpg" aria-label="Agrandir la photo : à la table à dessin">
+            <img src="atelier-dessin.jpg" alt="Barbe Noire Tattoo à la table à dessin, préparant un projet de tatouage sur mesure" loading="lazy" decoding="async" width="950" height="735">
+          </button>
+        </figure>
         <p>Artiste tatoueur <strong>depuis 2011</strong>, installé à <strong>Mouvaux</strong>, dans le Nord de la France, je conçois des pièces <strong>ornementales, géométriques et inspirées de la gravure</strong>, exécutées en fine line et en dotwork — la ligne fine et le point, au service du détail.</p>
         <p>Chaque projet naît d'une <strong>collaboration</strong> : nous partons de vos envies, de votre histoire et de votre morphologie pour dessiner ensemble, de A à Z, un tatouage <strong>entièrement sur mesure</strong>. Une pièce unique, pensée pour vous et pour personne d'autre.</p>
         <p>Je pratique également le <strong>handpoke</strong> : le tatouage à la main, sans machine, point par point. Une approche plus lente, plus silencieuse, presque méditative — au plus près du geste.</p>
         <p class="signature">Barbe Noire Tattoo</p>
       </div>
       <div class="reveal">
-        <figure class="about-photo" id="photoDessin">
-          <button class="site-photo" data-full="atelier-dessin.jpg" aria-label="Agrandir la photo : à la table à dessin">
-            <img src="atelier-dessin.jpg" alt="Barbe Noire Tattoo à la table à dessin, préparant un projet de tatouage sur mesure" loading="lazy" decoding="async" width="950" height="735">
-          </button>
-        </figure>
         <h3 class="list-title">Styles &amp; techniques</h3>
         <ul class="styles-list" aria-label="Styles et techniques pratiqués">
         <li><span class="style-name">Ornemental</span><span class="style-note">Motifs &amp; parures</span></li>
@@ -851,8 +853,8 @@ footer .copyright{opacity:.7}
       <img src="atelier-panorama.jpg" alt="Vue panoramique de l'atelier de tatouage de Barbe Noire Tattoo à Mouvaux — cabinet privé, sur rendez-vous" loading="lazy" decoding="async" width="1800" height="519">
     </button>
     <figcaption class="photo-caption">
-      <span class="dot-divider"><i></i><i></i><i></i><i></i><i></i></span>
       Le cabinet privé
+      <span class="dot-divider"><i></i><i></i><i></i><i></i><i></i></span>
     </figcaption>
   </figure>
 </section>
