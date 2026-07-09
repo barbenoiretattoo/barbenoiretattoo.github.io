@@ -30,9 +30,10 @@
 <meta property="og:title" content="Barbe Noire Tattoo — Tatoueur à Mouvaux, Nord">
 <meta property="og:description" content="Tatouages sur mesure : ornemental, géométrique, gravure. Fine line, dotwork &amp; handpoke. Sur rendez-vous à Mouvaux, près de Lille.">
 <meta property="og:url" content="https://www.barbenoiretattoo.com/">
-<!-- À compléter plus tard avec une photo de partage (1200×630) : -->
-<!-- <meta property="og:image" content="https://www.barbenoiretattoo.com/og-image.jpg"> -->
-<!-- <meta property="og:image:alt" content="Tatouage ornemental fine line réalisé par Barbe Noire Tattoo"> -->
+<meta property="og:image" content="https://www.barbenoiretattoo.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="L'atelier de tatouage de Barbe Noire Tattoo à Mouvaux">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
@@ -51,6 +52,10 @@
       "alternateName": "Barbe Noire",
       "url": "https://www.barbenoiretattoo.com/",
       "description": "Artiste tatoueur depuis 2011, spécialisé dans les styles ornemental, géométrique et gravure, en fine line, dotwork et handpoke. Projets sur mesure créés de A à Z en collaboration avec chaque client, uniquement sur rendez-vous.",
+      "image": [
+        "https://www.barbenoiretattoo.com/atelier-panorama.jpg",
+        "https://www.barbenoiretattoo.com/atelier-dessin.jpg"
+      ],
       "foundingDate": "2011",
       "address": {
         "@type": "PostalAddress",
@@ -378,6 +383,53 @@ section{padding:130px 0}
   color:var(--bone-dim);text-align:right;
 }
 
+/* ─── photos de l'atelier (section présentation) ─── */
+.site-photo{
+  display:block;width:100%;padding:0;background:none;border:none;
+  position:relative;margin:0;overflow:hidden;cursor:zoom-in;
+}
+.site-photo img{
+  width:100%;object-fit:cover;
+  filter:grayscale(35%) contrast(1.05);
+  transition:filter .6s,transform .8s var(--ease);
+}
+.site-photo:hover img{filter:grayscale(0) contrast(1.05);transform:scale(1.02)}
+/* coins gravés en équerre, identiques à la galerie */
+.site-photo::before{
+  content:"";position:absolute;inset:8px;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(var(--brass),var(--brass)) top left/12px 1px,
+    linear-gradient(var(--brass),var(--brass)) top left/1px 12px,
+    linear-gradient(var(--brass),var(--brass)) top right/12px 1px,
+    linear-gradient(var(--brass),var(--brass)) top right/1px 12px,
+    linear-gradient(var(--brass),var(--brass)) bottom left/12px 1px,
+    linear-gradient(var(--brass),var(--brass)) bottom left/1px 12px,
+    linear-gradient(var(--brass),var(--brass)) bottom right/12px 1px,
+    linear-gradient(var(--brass),var(--brass)) bottom right/1px 12px;
+  background-repeat:no-repeat;
+  opacity:0;transition:opacity .4s;
+}
+.site-photo:hover::before{opacity:1}
+.photo-caption{
+  margin-top:14px;text-align:center;
+  font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;
+  color:var(--bone-dim);
+}
+.photo-caption em{color:var(--brass)}
+.about-photo{margin-bottom:48px}
+.about-photo .site-photo{border:1px solid var(--line-soft)}
+.about-photo img{aspect-ratio:4/3}
+
+/* bandeau panoramique de l'atelier, pleine largeur */
+.atelier-band{margin-top:110px}
+.atelier-band .site-photo{
+  border-top:1px solid var(--line-soft);
+  border-bottom:1px solid var(--line-soft);
+}
+.atelier-band img{height:clamp(240px,34vw,420px)}
+.atelier-band .photo-caption{margin-top:22px}
+.atelier-band .dot-divider{margin:0 auto 14px;width:max-content}
+
 /* ════════════ PROCESSUS ════════════ */
 #processus{background:var(--ink-2);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
 .process-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-soft)}
@@ -454,6 +506,35 @@ section{padding:130px 0}
   padding-bottom:2px;transition:border-color .3s;
 }
 .gallery-note a:hover{border-color:var(--brass)}
+
+/* ─── pagination de la galerie : 6 photos par « planche » ─── */
+.gallery-nav{
+  display:flex;align-items:center;justify-content:center;gap:30px;
+  margin-top:52px;
+}
+.gallery-nav[hidden]{display:none}
+.gallery-nav button{
+  width:52px;height:52px;flex:none;
+  background:none;border:1px solid var(--line);color:var(--bone);
+  font-size:1.05rem;line-height:1;
+  position:relative;overflow:hidden;
+  transition:color .4s,border-color .4s,opacity .3s;
+}
+.gallery-nav button::before{
+  content:"";position:absolute;inset:0;background:var(--brass);
+  transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);
+  z-index:0;
+}
+.gallery-nav button span{position:relative;z-index:1}
+.gallery-nav button:hover:not(:disabled){color:var(--ink);border-color:var(--brass)}
+.gallery-nav button:hover:not(:disabled)::before{transform:scaleX(1)}
+.gallery-nav button:disabled{opacity:.25;cursor:default}
+.gallery-page{
+  font-family:var(--display);font-size:.92rem;
+  letter-spacing:.34em;text-transform:uppercase;color:var(--bone-dim);
+  min-width:110px;text-align:center;
+}
+.gallery-page em{color:var(--brass)}
 
 /* ════════════ LIGHTBOX ════════════ */
 .lightbox{
@@ -621,6 +702,10 @@ footer .copyright{opacity:.7}
   .process-step{padding:40px 28px}
   .gallery-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .gallery-item::after{display:none}
+  .gallery-nav{gap:20px;margin-top:40px}
+  .about-photo{margin-bottom:36px}
+  .atelier-band{margin-top:64px}
+  .atelier-band img{height:clamp(200px,44vw,300px)}
   .contact-buttons{flex-direction:column;align-items:stretch}
   .btn-social{justify-content:center}
   .modal-box{padding:38px 24px}
@@ -742,6 +827,11 @@ footer .copyright{opacity:.7}
         <p class="signature">Barbe Noire Tattoo</p>
       </div>
       <div class="reveal">
+        <figure class="about-photo" id="photoDessin">
+          <button class="site-photo" data-full="atelier-dessin.jpg" aria-label="Agrandir la photo : à la table à dessin">
+            <img src="atelier-dessin.jpg" alt="Barbe Noire Tattoo à la table à dessin, préparant un projet de tatouage sur mesure" loading="lazy" decoding="async" width="950" height="735">
+          </button>
+        </figure>
         <h3 class="list-title">Styles &amp; techniques</h3>
         <ul class="styles-list" aria-label="Styles et techniques pratiqués">
         <li><span class="style-name">Ornemental</span><span class="style-note">Motifs &amp; parures</span></li>
@@ -754,6 +844,17 @@ footer .copyright{opacity:.7}
       </div>
     </div>
   </div>
+
+  <!-- l'atelier, en panoramique pleine largeur -->
+  <figure class="atelier-band reveal" id="photoAtelier">
+    <button class="site-photo" data-full="atelier-panorama.jpg" aria-label="Agrandir la photo panoramique de l'atelier">
+      <img src="atelier-panorama.jpg" alt="Vue panoramique de l'atelier de tatouage de Barbe Noire Tattoo à Mouvaux — cabinet privé, sur rendez-vous" loading="lazy" decoding="async" width="1800" height="519">
+    </button>
+    <figcaption class="photo-caption">
+      <span class="dot-divider"><i></i><i></i><i></i><i></i><i></i></span>
+      Le cabinet privé
+    </figcaption>
+  </figure>
 </section>
 
 <!-- ═══════════ PROCESSUS ═══════════ -->
@@ -796,6 +897,11 @@ footer .copyright{opacity:.7}
     </div>
     <div class="gallery-grid" id="galleryGrid">
       <div class="gallery-empty" id="galleryEmpty">La galerie se prépare — retrouvez en attendant tous mes travaux sur Instagram.<br><span style="font-size:.72rem;opacity:.7">Les photos déposées dans le dossier « photos » du dépôt GitHub s’afficheront ici automatiquement.</span></div>
+    </div>
+    <div class="gallery-nav" id="galleryNav" hidden>
+      <button id="galleryPrev" aria-label="Planche précédente"><span>←</span></button>
+      <p class="gallery-page" id="galleryPage" aria-live="polite"></p>
+      <button id="galleryNext" aria-label="Planche suivante"><span>→</span></button>
     </div>
     <p class="gallery-note reveal">Plus de projets sur <a href="https://www.instagram.com/barbenoire_tattoo/" target="_blank" rel="noopener">@barbenoire_tattoo</a></p>
   </div>
@@ -1095,11 +1201,32 @@ async function fetchPhotoList(){
   return [];
 }
 
-async function renderGallery(){
-  const photos = await fetchPhotoList();
+/* Pagination : la galerie s'affiche par « planches » de 6 photos */
+const PHOTOS_PER_PAGE = 6;
+let allPhotos = [];
+let galleryCurrentPage = 0;
+
+const galleryNav = document.getElementById('galleryNav');
+const galleryPrev = document.getElementById('galleryPrev');
+const galleryNext = document.getElementById('galleryNext');
+const galleryPageEl = document.getElementById('galleryPage');
+
+/* Numérotation romaine, dans l'esprit des stèles */
+function toRoman(n){
+  const map = [[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+  let out = '';
+  for(const [v,s] of map){ while(n >= v){ out += s; n -= v; } }
+  return out || 'I';
+}
+
+function renderGalleryPage(scrollToTop){
+  const totalPages = Math.max(1, Math.ceil(allPhotos.length / PHOTOS_PER_PAGE));
+  galleryCurrentPage = Math.min(Math.max(galleryCurrentPage, 0), totalPages - 1);
+  const start = galleryCurrentPage * PHOTOS_PER_PAGE;
+  const pagePhotos = allPhotos.slice(start, start + PHOTOS_PER_PAGE);
+
   galleryGrid.querySelectorAll('.gallery-item').forEach(el => el.remove());
-  galleryEmpty.style.display = photos.length ? 'none' : 'block';
-  photos.forEach(photo => {
+  pagePhotos.forEach(photo => {
     const btn = document.createElement('button');
     btn.className = 'gallery-item';
     btn.setAttribute('aria-label','Agrandir la photo de tatouage');
@@ -1116,7 +1243,34 @@ async function renderGallery(){
     galleryGrid.appendChild(btn);
     galleryIO.observe(btn);
   });
+
+  /* contrôles : visibles uniquement s'il y a plus d'une planche */
+  galleryNav.hidden = totalPages <= 1;
+  galleryPrev.disabled = galleryCurrentPage === 0;
+  galleryNext.disabled = galleryCurrentPage === totalPages - 1;
+  galleryPageEl.innerHTML = `<em>${toRoman(galleryCurrentPage + 1)}</em>&nbsp;/&nbsp;${toRoman(totalPages)}`;
+
+  if(scrollToTop){
+    document.getElementById('galerie').scrollIntoView({behavior:'smooth', block:'start'});
+  }
 }
+
+galleryPrev.addEventListener('click', () => { galleryCurrentPage--; renderGalleryPage(true); });
+galleryNext.addEventListener('click', () => { galleryCurrentPage++; renderGalleryPage(true); });
+
+async function renderGallery(){
+  allPhotos = await fetchPhotoList();
+  galleryEmpty.style.display = allPhotos.length ? 'none' : 'block';
+  renderGalleryPage(false);
+}
+
+/* ═══════════ Photos de l'atelier (section présentation) ═══════════ */
+/* Clic → lightbox ; si le fichier n'est pas encore en ligne, la figure se masque proprement */
+document.querySelectorAll('.site-photo').forEach(el => {
+  const img = el.querySelector('img');
+  img.addEventListener('error', () => { el.closest('figure').style.display = 'none'; });
+  el.addEventListener('click', () => openLightbox(img.currentSrc || img.src, img.alt));
+});
 
 /* ═══════════ Démarrage ═══════════ */
 renderGallery();
