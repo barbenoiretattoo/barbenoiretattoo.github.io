@@ -575,6 +575,31 @@ section{padding:130px 0}
 .btn-social:hover::before{transform:scaleX(1)}
 .btn-social svg,.btn-social span{position:relative;z-index:1}
 .btn-social svg{width:18px;height:18px;fill:currentColor;flex:none}
+/* bouton avis Google : petit frère des boutons du site — bordure gravée,
+   balayage acier au survol, encadré par la ponctuation runique ᛬ */
+.contact-review{margin-top:34px}
+.contact-review a{
+  display:inline-flex;align-items:center;gap:16px;
+  border:1px solid var(--line);padding:13px 30px;
+  font-size:.6rem;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--bone-dim);font-weight:400;
+  position:relative;overflow:hidden;
+  transition:color .4s,border-color .4s;
+}
+.contact-review a::before{
+  content:"";position:absolute;inset:0;background:var(--brass);
+  transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);
+  z-index:0;
+}
+.contact-review a:hover{color:var(--ink);border-color:var(--brass)}
+.contact-review a:hover::before{transform:scaleX(1)}
+.contact-review a span,.contact-review a i{position:relative;z-index:1}
+.contact-review i{
+  width:3px;height:3px;border-radius:50%;background:var(--brass);flex:none;
+  box-shadow:0 -6px 0 var(--brass);transform:translateY(3px);
+  transition:background .4s,box-shadow .4s;
+}
+.contact-review a:hover i{background:var(--ink);box-shadow:0 -6px 0 var(--ink)}
 .contact-meta{
   margin-top:64px;font-size:.68rem;letter-spacing:.3em;
   text-transform:uppercase;color:var(--bone-dim);line-height:2.4;
@@ -929,6 +954,13 @@ footer .copyright{opacity:.7}
         <span>Messenger Facebook</span>
       </a>
     </div>
+    <p class="contact-review reveal">
+      <a href="https://g.page/r/CVnfVlAbrG99EAE/review" target="_blank" rel="noopener" aria-label="Laisser un avis sur la fiche Google de Barbe Noire Tattoo">
+        <i aria-hidden="true"></i>
+        <span>Laisser un avis Google</span>
+        <i aria-hidden="true"></i>
+      </a>
+    </p>
     <div class="contact-meta reveal">
       <div class="dot-divider"><i></i><i></i><i></i><i></i><i></i></div>
       Mouvaux · Nord (59) · France<br>
