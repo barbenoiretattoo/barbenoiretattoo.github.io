@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- sitemap.xml — Barbe Noire Tattoo
-     À placer à la racine du site, puis à soumettre dans Google Search Console.
-     Adresse officielle : https://barbenoiretattoo.github.io -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.barbenoiretattoo.com/</loc>
-    <lastmod>2026-07-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-08-09</lastmod>
   </url>
   <url>
-    <loc>https://www.barbenoiretattoo.com/chroniques/pourquoi-choisir-un-cabinet-prive-de-tatouage/</loc>
+    <loc>https://www.barbenoiretattoo.com/chroniques/</loc>
     <lastmod>2026-08-09</lastmod>
   </url>
 </urlset>
