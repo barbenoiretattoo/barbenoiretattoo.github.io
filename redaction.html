@@ -97,6 +97,8 @@ button{font-family:var(--body);cursor:pointer}
 }
 .editor-body:focus{outline:none;border-color:var(--brass)}
 .editor-body p{margin-bottom:16px}
+.editor-body h2{font-family:var(--display);font-size:1.3rem;letter-spacing:.03em;margin:22px 0 10px}
+.editor-body h3{font-family:var(--display);font-size:1.08rem;letter-spacing:.04em;margin:18px 0 8px}
 .editor-body ul,.editor-body ol{margin:0 0 16px 26px}
 .editor-body blockquote{border-left:2px solid var(--brass);padding-left:18px;font-style:italic;color:var(--bone-dim);margin:16px 0}
 .editor-body a{color:var(--brass);text-decoration:underline}
@@ -230,6 +232,7 @@ body.busy{cursor:progress}
       <div class="field">
         <label>Contenu de l'article</label>
         <div class="editor-toolbar">
+          <button type="button" data-cmd="toggleHeading">Titre</button>
           <button type="button" data-cmd="bold">Gras</button>
           <button type="button" data-cmd="insertUnorderedList">Liste</button>
           <button type="button" data-cmd="insertOrderedList">Numéros</button>
@@ -237,7 +240,7 @@ body.busy{cursor:progress}
           <button type="button" data-cmd="formatBlockquote">Citation</button>
         </div>
         <div class="editor-body" id="articleBody" contenteditable="true"></div>
-        <p class="hint">Vous pouvez aussi déposer une image directement dans le texte.</p>
+        <p class="hint">Coller un texte copié ailleurs conserve les titres, le gras, l'italique, les listes, les liens et les citations — les polices et couleurs d'origine sont elles automatiquement remplacées par celles du site. Vous pouvez aussi déposer une image directement dans le texte.</p>
       </div>
     </form>
   </div>
@@ -489,6 +492,9 @@ toolbarButtons.forEach(btn => {
       if(url) document.execCommand('createLink', false, url);
     } else if(cmd === 'formatBlockquote'){
       document.execCommand('formatBlock', false, 'blockquote');
+    } else if(cmd === 'toggleHeading'){
+      const current = (document.queryCommandValue('formatBlock') || '').toLowerCase();
+      document.execCommand('formatBlock', false, current === 'h2' ? 'p' : 'h2');
     } else {
       document.execCommand(cmd, false, null);
     }
@@ -504,6 +510,7 @@ function updateToolbarState(){
       else if(cmd === 'insertUnorderedList') active = document.queryCommandState('insertUnorderedList');
       else if(cmd === 'insertOrderedList') active = document.queryCommandState('insertOrderedList');
       else if(cmd === 'formatBlockquote') active = (document.queryCommandValue('formatBlock') || '').toLowerCase() === 'blockquote';
+      else if(cmd === 'toggleHeading') active = (document.queryCommandValue('formatBlock') || '').toLowerCase() === 'h2';
     }catch(e){}
     btn.classList.toggle('active', active);
   });
@@ -511,25 +518,183 @@ function updateToolbarState(){
 articleBody.addEventListener('keyup', updateToolbarState);
 articleBody.addEventListener('mouseup', updateToolbarState);
 
-/* glisser une image directement dans le texte */
+/* glisser une image — ou du texte — directement dans le texte */
 articleBody.addEventListener('dragover', e => e.preventDefault());
 articleBody.addEventListener('drop', async e => {
   const file = e.dataTransfer.files && e.dataTransfer.files[0];
-  if(!file || !file.type.startsWith('image/')) return;
+  if(file && file.type.startsWith('image/')){
+    e.preventDefault();
+    setStatus('Compression de l\u2019image…');
+    try{
+      const { blob } = await compressImage(file, 1200, 0.8);
+      const id = 'img' + Math.random().toString(36).slice(2,9);
+      pendingBodyImages[id] = blob;
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      img.dataset.pending = id;
+      let range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+      if(range){ range.collapse(false); range.insertNode(img); }
+      else articleBody.appendChild(img);
+      setStatus('Image ajoutée dans le texte.');
+    }catch(err){ setStatus('Impossible d\u2019ajouter cette image : ' + err.message, true); }
+    return;
+  }
+  // pas une image : on dépose probablement du texte sélectionné ailleurs — même nettoyage que le collage
+  const html = e.dataTransfer.getData('text/html');
+  const text = e.dataTransfer.getData('text/plain');
+  if(!html && !text) return;
   e.preventDefault();
-  setStatus('Compression de l\u2019image…');
-  try{
-    const { blob } = await compressImage(file, 1200, 0.8);
-    const id = 'img' + Math.random().toString(36).slice(2,9);
-    pendingBodyImages[id] = blob;
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(blob);
-    img.dataset.pending = id;
-    let range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
-    if(range){ range.collapse(false); range.insertNode(img); }
-    else articleBody.appendChild(img);
-    setStatus('Image ajoutée dans le texte.');
-  }catch(err){ setStatus('Impossible d\u2019ajouter cette image : ' + err.message, true); }
+  const frag = buildCleanFragment(html, text);
+  const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+  insertFragmentAtRange(frag, range);
+});
+
+/* ═══════════ Collage intelligent ═══════════
+   On garde la structure qui a un sens dans l'éditeur (titres, gras, italique,
+   listes, liens, citations) et on efface tout le reste (polices, couleurs,
+   tailles, marges…) pour que le texte collé adopte automatiquement la charte
+   du site plutôt que de garder l'habillage de son document d'origine. */
+const HEADING_MAP = { h1:'h2', h2:'h2', h3:'h3', h4:'h3', h5:'h3', h6:'h3' };
+const SKIP_TAGS = new Set(['script','style','img','iframe','object','embed','svg','video','audio','source','picture']);
+const TABLE_TAGS = new Set(['table','thead','tbody','tfoot','tr','td','th']);
+const BLOCK_TAGS = new Set(['p','div','section','article','ul','ol','li','blockquote','h1','h2','h3','h4','h5','h6','table','thead','tbody','tfoot','tr','td','th']);
+
+function isBoldNode(el){
+  const tag = el.tagName.toLowerCase();
+  if(tag === 'b' || tag === 'strong') return true;
+  const w = /font-weight\s*:\s*(bold|bolder|[0-9]+)/i.exec(el.getAttribute('style') || '');
+  if(!w) return false;
+  const v = w[1].toLowerCase();
+  return v === 'bold' || v === 'bolder' || parseInt(v, 10) >= 600;
+}
+function isItalicNode(el){
+  const tag = el.tagName.toLowerCase();
+  if(tag === 'i' || tag === 'em') return true;
+  return /font-style\s*:\s*italic/i.test(el.getAttribute('style') || '');
+}
+function hasBlockChild(node){
+  return Array.from(node.children || []).some(c => BLOCK_TAGS.has(c.tagName.toLowerCase()));
+}
+/* applique gras/italique/lien à un contenu déjà nettoyé, selon ce que porte l'élément lui-même */
+function wrapFormatting(el, inner){
+  if(isBoldNode(el)){ const s = document.createElement('strong'); s.appendChild(inner); inner = document.createDocumentFragment(); inner.appendChild(s); }
+  if(isItalicNode(el)){ const em = document.createElement('em'); em.appendChild(inner); inner = document.createDocumentFragment(); inner.appendChild(em); }
+  if(el.tagName.toLowerCase() === 'a' && el.getAttribute('href')){
+    const a = document.createElement('a');
+    a.setAttribute('href', el.getAttribute('href'));
+    a.appendChild(inner);
+    inner = document.createDocumentFragment();
+    inner.appendChild(a);
+  }
+  return inner;
+}
+function cleanInline(node){
+  const frag = document.createDocumentFragment();
+  for(const child of Array.from(node.childNodes)){
+    if(child.nodeType === Node.TEXT_NODE){ frag.appendChild(document.createTextNode(child.textContent)); continue; }
+    if(child.nodeType !== Node.ELEMENT_NODE) continue;
+    const tag = child.tagName.toLowerCase();
+    if(SKIP_TAGS.has(tag)) continue;
+    if(tag === 'br'){ frag.appendChild(document.createElement('br')); continue; }
+    frag.appendChild(wrapFormatting(child, cleanInline(child)));
+  }
+  return frag;
+}
+function cleanBlock(node, out){
+  for(const child of Array.from(node.childNodes)){
+    if(child.nodeType === Node.TEXT_NODE){
+      const t = child.textContent;
+      if(t.trim()){ const p = document.createElement('p'); p.appendChild(document.createTextNode(t.trim())); out.appendChild(p); }
+      continue;
+    }
+    if(child.nodeType !== Node.ELEMENT_NODE) continue;
+    const tag = child.tagName.toLowerCase();
+    if(SKIP_TAGS.has(tag)) continue;
+    if(TABLE_TAGS.has(tag)){ cleanBlock(child, out); continue; } // tableau : on garde le texte, aplati
+
+    if(tag === 'ul' || tag === 'ol'){
+      const list = document.createElement(tag);
+      Array.from(child.children).forEach(li => {
+        if(li.tagName.toLowerCase() !== 'li') return;
+        const liEl = document.createElement('li');
+        liEl.appendChild(cleanInline(li));
+        if(liEl.textContent.trim()) list.appendChild(liEl);
+      });
+      if(list.children.length) out.appendChild(list);
+      continue;
+    }
+    if(tag === 'blockquote'){
+      const bq = document.createElement('blockquote');
+      cleanBlock(child, bq);
+      if(bq.childNodes.length) out.appendChild(bq);
+      continue;
+    }
+    if(HEADING_MAP[tag]){
+      const h = document.createElement(HEADING_MAP[tag]);
+      h.appendChild(cleanInline(child));
+      if(h.textContent.trim()) out.appendChild(h);
+      continue;
+    }
+    // p, div, section, article, span, font, ou toute balise inconnue :
+    // si ça contient un vrai bloc (liste, citation, titre…), on continue à l'intérieur ;
+    // sinon on le traite comme un paragraphe simple, en gardant gras/italique/lien.
+    if(hasBlockChild(child)){
+      cleanBlock(child, out);
+    } else {
+      const p = document.createElement('p');
+      p.appendChild(wrapFormatting(child, cleanInline(child)));
+      if(p.textContent.trim()) out.appendChild(p);
+    }
+  }
+}
+function buildCleanFragment(html, text){
+  const out = document.createDocumentFragment();
+  if(html){
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    cleanBlock(container, out);
+  }
+  if(!out.childNodes.length && text){
+    text.split(/\n{2,}/).forEach(chunk => {
+      const t = chunk.trim();
+      if(!t) return;
+      const p = document.createElement('p');
+      t.split(/\n/).forEach((line, i) => {
+        if(i > 0) p.appendChild(document.createElement('br'));
+        p.appendChild(document.createTextNode(line));
+      });
+      out.appendChild(p);
+    });
+  }
+  return out;
+}
+function insertFragmentAtRange(frag, range){
+  if(!frag.childNodes.length) return;
+  const lastNode = frag.lastChild; // référence gardée avant l'insertion (le fragment se vide au moment d'insertNode)
+  if(range){
+    range.deleteContents();
+    range.insertNode(frag);
+  } else {
+    articleBody.appendChild(frag);
+  }
+  if(lastNode){
+    const r2 = document.createRange();
+    r2.setStartAfter(lastNode);
+    r2.collapse(true);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r2);
+  }
+  updateToolbarState();
+}
+articleBody.addEventListener('paste', e => {
+  e.preventDefault();
+  const html = (e.clipboardData || window.clipboardData).getData('text/html');
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+  const frag = buildCleanFragment(html, text);
+  const sel = window.getSelection();
+  const range = (sel && sel.rangeCount) ? sel.getRangeAt(0) : null;
+  insertFragmentAtRange(frag, range);
 });
 
 /* ═══════════ Envoi des images en attente (couverture + texte) ═══════════ */
