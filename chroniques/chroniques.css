@@ -201,6 +201,8 @@ section.blog-list{padding:100px 0 140px}
 
 .post-body{max-width:680px;margin:64px auto 0;padding:0 28px 40px}
 .post-body p{color:var(--bone-dim);margin-bottom:24px;font-size:1.06rem;font-weight:300;line-height:1.85}
+.post-body h2{font-size:1.5rem;letter-spacing:.03em;margin:46px 0 18px;color:var(--bone)}
+.post-body h3{font-size:1.18rem;letter-spacing:.05em;margin:36px 0 14px;color:var(--bone)}
 .post-body strong{color:var(--bone);font-weight:500}
 .post-body a{color:var(--brass);border-bottom:1px solid rgba(165,184,198,.35);padding-bottom:1px;transition:border-color .3s}
 .post-body a:hover{border-color:var(--brass)}
