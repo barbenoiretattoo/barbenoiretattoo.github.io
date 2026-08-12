@@ -123,7 +123,7 @@ nav.scrolled{
   letter-spacing:.14em;text-transform:uppercase;margin:16px 0 22px;
 }
 .blog-hero p.lede{
-  color:var(--bone-dim);max-width:56ch;margin:0 auto;font-size:1rem;
+  color:var(--bone-dim);max-width:56ch;margin:0 auto 24px;font-size:1rem;
 }
 .blog-back{
   display:inline-flex;align-items:center;gap:10px;margin-top:30px;
