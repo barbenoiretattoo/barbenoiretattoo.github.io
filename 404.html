@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page introuvable | Barbe Noire Tattoo</title>
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0b0d10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230c0b09'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23b3985f' stroke-width='2' stroke-dasharray='2 6'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23b3985f'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0b0d10;--ink-2:#10131a;--ink-3:#161b23;
+  --bone:#e7e4db;--bone-dim:#8d95a0;--brass:#a5b8c6;
+  --line:rgba(231,228,219,.13);--line-soft:rgba(231,228,219,.07);
+  --display:'Cinzel',Georgia,serif;--body:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+/* polices auto-hébergées — chemins absolus, cette page pouvant être servie
+   depuis n'importe quelle profondeur d'URL (ex. /chroniques/xyz/) */
+@font-face{font-family:'Cinzel';font-weight:400;font-style:normal;font-display:swap;src:url('/fonts/cinzel-400.woff2') format('woff2')}
+@font-face{font-family:'Cinzel';font-weight:500;font-style:normal;font-display:swap;src:url('/fonts/cinzel-500.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:300;font-style:normal;font-display:swap;src:url('/fonts/jost-300.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:400;font-style:normal;font-display:swap;src:url('/fonts/jost-400.woff2') format('woff2')}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);color:var(--bone);
+  font-family:var(--body);font-weight:300;line-height:1.75;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100svh;
+}
+::selection{background:var(--brass);color:var(--ink)}
+h1{font-family:var(--display);font-weight:400;line-height:1.15}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:1.5px solid var(--brass);outline-offset:3px}
+
+/* trame de points, identique à celle du reste du site */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(rgba(231,228,219,.045) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+
+.brand-mark{
+  position:fixed;top:22px;left:34px;z-index:10;
+  font-family:var(--display);font-size:.85rem;
+  letter-spacing:.3em;text-transform:uppercase;
+}
+.brand-mark em{color:var(--brass);font-style:normal}
+
+.notfound{
+  position:relative;min-height:100svh;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 24px 90px;
+}
+
+/* ornement repris du héros de la page d'accueil, pour l'ancrage visuel */
+.hero-ornament{
+  position:absolute;top:50%;left:50%;
+  width:min(340px,80vw);height:auto;
+  transform:translate(-50%,-53%);
+  opacity:.38;pointer-events:none;
+}
+.hero-ornament .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.4s var(--ease) forwards}
+.hero-ornament .draw.d2{animation-delay:.55s}
+.hero-ornament .draw.d3{animation-delay:1.1s}
+.hero-ornament .dots{opacity:0;animation:fadeIn 1.4s ease 1.9s forwards}
+.hero-ornament{animation:runeBreathe 11s ease-in-out 3s infinite alternate}
+@keyframes runeBreathe{
+  from{transform:translate(-50%,-53%) scale(1);opacity:.38}
+  to{transform:translate(-50%,-53%) scale(1.02);opacity:.46}
+}
+.hero-ornament .dots circle{animation:runeGlint 5s ease-in-out infinite}
+.hero-ornament .dots circle:nth-child(2n){animation-delay:1.4s}
+.hero-ornament .dots circle:nth-child(3n){animation-delay:2.6s}
+@keyframes runeGlint{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadeIn{to{opacity:1}}
+@keyframes riseIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+
+.notfound-inner{position:relative}
+.eyebrow{
+  font-size:.66rem;letter-spacing:.5em;text-transform:uppercase;
+  color:var(--brass);font-weight:600;
+  opacity:0;animation:riseIn 1s var(--ease) .2s forwards;
+}
+.notfound h1{
+  font-size:clamp(1.8rem,5.4vw,3.1rem);
+  letter-spacing:.04em;margin:18px 0 0;
+  opacity:0;animation:riseIn 1.1s var(--ease) .4s forwards;
+}
+.dot-divider{display:flex;align-items:center;justify-content:center;gap:14px;padding:26px 0 22px}
+.dot-divider i{width:3px;height:3px;border-radius:50%;background:var(--bone-dim);opacity:.5;box-shadow:0 -7px 0 var(--bone-dim)}
+.dot-divider i:nth-child(3){width:3.5px;height:3.5px;background:var(--brass);opacity:1;box-shadow:0 -8px 0 var(--brass),0 8px 0 var(--brass)}
+.notfound-sub{
+  max-width:46ch;margin:0 auto;color:var(--bone-dim);font-size:.98rem;
+  opacity:0;animation:riseIn 1s var(--ease) .6s forwards;
+}
+.notfound .hero-cta{
+  margin-top:44px;display:inline-flex;align-items:center;gap:16px;
+  border:1px solid var(--line);padding:17px 46px;
+  font-size:.7rem;letter-spacing:.36em;text-transform:uppercase;color:var(--bone);
+  position:relative;overflow:hidden;font-weight:400;
+  opacity:0;animation:riseIn 1s var(--ease) .8s forwards;
+  transition:color .4s,border-color .4s;
+}
+.notfound .hero-cta::before{
+  content:"";position:absolute;inset:0;background:var(--brass);
+  transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);z-index:-1;
+}
+.notfound .hero-cta:hover{color:var(--ink);border-color:var(--brass)}
+.notfound .hero-cta:hover::before{transform:scaleX(1)}
+.notfound-links{
+  margin-top:26px;font-size:.72rem;letter-spacing:.1em;color:var(--bone-dim);
+  opacity:0;animation:riseIn 1s var(--ease) 1s forwards;
+}
+.notfound-links a{color:var(--brass);text-decoration:underline;text-underline-offset:3px}
+.notfound-links a:hover{color:var(--bone)}
+
+@media (max-width:600px){
+  .brand-mark{left:20px;top:18px;font-size:.74rem}
+  .notfound{padding:100px 20px 60px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .eyebrow,.notfound h1,.notfound-sub,.notfound .hero-cta,.notfound-links,
+  .hero-ornament,.hero-ornament .draw,.hero-ornament .dots,.hero-ornament .dots circle{
+    animation:none;opacity:1;stroke-dashoffset:0;
+  }
+  .hero-ornament{transform:translate(-50%,-53%)}
+}
+</style>
+</head>
+<body>
+
+<a class="brand-mark" href="/">Barbe Noire <em>Tattoo</em></a>
+
+<main class="notfound" aria-label="Page introuvable">
+  <svg class="hero-ornament" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g stroke="#a5b8c6" stroke-width="0.7" opacity=".55">
+      <path class="draw" d="M150 14 L286 150 L150 286 L14 150 Z" pathLength="1"/>
+      <path class="draw d2" d="M150 40 L260 150 L150 260 L40 150 Z" pathLength="1" opacity=".55"/>
+    </g>
+    <g stroke="#e7e4db" stroke-width="1.1" stroke-linecap="square" opacity=".85">
+      <path class="draw d2" d="M150 56 L150 236" pathLength="1"/>
+      <path class="draw d3" d="M120 88 L150 56 L180 88" pathLength="1"/>
+      <path class="draw d3" d="M150 96 L194 124 L150 152" pathLength="1"/>
+      <path class="draw d3" d="M150 160 L194 188 L150 216" pathLength="1"/>
+      <path class="draw d3" d="M114 122 L186 212" pathLength="1"/>
+    </g>
+    <g stroke="#a5b8c6" stroke-width="0.7" opacity=".5">
+      <path class="draw d3" d="M136 236 L164 236" pathLength="1"/>
+    </g>
+    <g class="dots" fill="#a5b8c6">
+      <circle cx="150" cy="14" r="2.2"/><circle cx="286" cy="150" r="2.2"/>
+      <circle cx="150" cy="286" r="2.2"/><circle cx="14" cy="150" r="2.2"/>
+      <circle cx="150" cy="46" r="1.6"/><circle cx="150" cy="248" r="1.6"/>
+    </g>
+    <g class="dots" fill="#e7e4db" opacity=".8">
+      <circle cx="120" cy="88" r="1.5"/><circle cx="180" cy="88" r="1.5"/>
+      <circle cx="194" cy="124" r="1.5"/><circle cx="194" cy="188" r="1.5"/>
+      <circle cx="114" cy="122" r="1.5"/><circle cx="186" cy="212" r="1.5"/>
+      <circle cx="82" cy="150" r="1.3"/><circle cx="218" cy="150" r="1.3"/>
+    </g>
+  </svg>
+
+  <div class="notfound-inner">
+    <p class="eyebrow">Erreur 404</p>
+    <h1>Cette pierre n'est pas gravée.</h1>
+    <div class="dot-divider" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="notfound-sub">La page que vous cherchiez n'existe pas, ou plus — elle a peut-être changé d'adresse, ou n'a jamais été publiée.</p>
+    <a class="hero-cta" href="/">Retour à l'accueil</a>
+    <p class="notfound-links">Ou consultez <a href="/#galerie">le portfolio</a> · <a href="/chroniques/">les chroniques</a></p>
+  </div>
+</main>
+
+</body>
+</html>

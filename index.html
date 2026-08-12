@@ -93,10 +93,7 @@
 }
 </script>
 
-<!-- ═══ Performance : polices ═══ -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Jost:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<!-- ═══ Performance : polices auto-hébergées (voir @font-face plus bas) ═══ -->
 
 <style>
 /* ════════════════════════════════════════════════
@@ -118,6 +115,13 @@
   --body:'Jost',system-ui,sans-serif;
   --ease:cubic-bezier(.22,1,.36,1);
 }
+/* polices auto-hébergées — fichiers à déposer dans le dossier fonts/ à la racine du dépôt */
+@font-face{font-family:'Cinzel';font-weight:400;font-style:normal;font-display:swap;src:url('fonts/cinzel-400.woff2') format('woff2')}
+@font-face{font-family:'Cinzel';font-weight:500;font-style:normal;font-display:swap;src:url('fonts/cinzel-500.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:300;font-style:normal;font-display:swap;src:url('fonts/jost-300.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:400;font-style:normal;font-display:swap;src:url('fonts/jost-400.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:600;font-style:normal;font-display:swap;src:url('fonts/jost-600.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:300;font-style:italic;font-display:swap;src:url('fonts/jost-300-italic.woff2') format('woff2')}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:90px}
 body{
@@ -1159,7 +1163,7 @@ document.getElementById('ghFolderLink').href =
 
 /* ═══════════ Admin : verrouillage par mot de passe ═══════════ */
 /* Empreinte SHA-256 du mot de passe (le mot de passe lui-même n'apparaît pas dans le code) */
-const ADMIN_HASH = '40ebb6df31f807b014dc42f6d57647252710af4e48a539ed581c89e5840e8605';
+const ADMIN_HASH = '442c94f9119014a97710603e46ecbcf88fb4f346f7af6b276aa83c8451e4a081';
 const adminLock = document.getElementById('adminLock');
 const adminContent = document.getElementById('adminContent');
 const adminPass = document.getElementById('adminPass');
