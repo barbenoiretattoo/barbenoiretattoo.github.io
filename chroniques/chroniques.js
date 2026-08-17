@@ -47,6 +47,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }, {threshold:.1});
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+  /* Filet de sécurité : un saut de défilement rapide (clic dans le menu,
+     lien direct, retour navigateur...) peut faire passer un bloc dans
+     l'écran sans que l'observateur ne le détecte, le laissant invisible
+     en permanence. On revérifie donc régulièrement. */
+  function catchUpRevealsNow(){
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      if(el.getBoundingClientRect().top < window.innerHeight){
+        el.classList.add('visible');
+        io.unobserve(el);
+      }
+    });
+  }
+  window.addEventListener('scroll', catchUpRevealsNow, {passive:true});
+  window.addEventListener('load', catchUpRevealsNow);
+  window.addEventListener('hashchange', catchUpRevealsNow);
+  if(navLinks) navLinks.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => setTimeout(catchUpRevealsNow, 450)));
+  catchUpRevealsNow();
+  /* vérification périodique en secours, tant qu'il reste des blocs non révélés */
+  const revealSafetyNet = setInterval(() => {
+    if(document.querySelectorAll('.reveal:not(.visible)').length === 0){
+      clearInterval(revealSafetyNet);
+      return;
+    }
+    catchUpRevealsNow();
+  }, 400);
+
   /* lightbox sur les images marquées .plaque[data-full] */
   const lightbox = document.getElementById('lightbox');
   const lightboxImg = document.getElementById('lightboxImg');

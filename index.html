@@ -1141,6 +1141,41 @@ const galleryIO = new IntersectionObserver(entries => {
   });
 }, {threshold:.1});
 
+/* Filet de sécurité : un saut de défilement rapide (clic dans le menu,
+   lien direct vers une section, retour navigateur, molette véloce...)
+   peut faire passer un bloc dans l'écran sans que l'observateur ne le
+   détecte, le laissant invisible en permanence. On revérifie donc
+   régulièrement et on révèle immédiatement tout ce qui est déjà visible. */
+function catchUpRevealsNow(){
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+    if(el.getBoundingClientRect().top < window.innerHeight){
+      el.classList.add('visible');
+      io.unobserve(el);
+    }
+  });
+  document.querySelectorAll('.gallery-item:not(.shown)').forEach(el => {
+    if(el.getBoundingClientRect().top < window.innerHeight){
+      el.classList.add('shown');
+      galleryIO.unobserve(el);
+    }
+  });
+}
+window.addEventListener('scroll', catchUpRevealsNow, {passive:true});
+window.addEventListener('load', catchUpRevealsNow);
+window.addEventListener('hashchange', catchUpRevealsNow);
+navLinks.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => setTimeout(catchUpRevealsNow, 450)));
+catchUpRevealsNow();
+/* vérification périodique en secours, tant qu'il reste des blocs non révélés
+   (se coupe seule dès que tout est apparu — coût négligeable, aucune
+   dépendance à un évènement précis pour garantir l'affichage) */
+const revealSafetyNet = setInterval(() => {
+  if(document.querySelectorAll('.reveal:not(.visible), .gallery-item:not(.shown)').length === 0){
+    clearInterval(revealSafetyNet);
+    return;
+  }
+  catchUpRevealsNow();
+}, 400);
+
 /* ═══════════ Modales ═══════════ */
 function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
@@ -1302,6 +1337,7 @@ function renderGalleryPage(scrollToTop){
   if(scrollToTop){
     document.getElementById('galerie').scrollIntoView({behavior:'smooth', block:'start'});
   }
+  catchUpReveals();
 }
 
 galleryPrev.addEventListener('click', () => { galleryCurrentPage--; renderGalleryPage(true); });
