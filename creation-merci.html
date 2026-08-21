@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merci, Barbe Noire Tattoo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0d10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230c0b09'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23b3985f' stroke-width='2' stroke-dasharray='2 6'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23b3985f'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0b0d10; --ink-2:#10131a;
+  --bone:#e7e4db; --bone-dim:#8d95a0; --brass:#a5b8c6;
+  --line:rgba(231,228,219,.13); --line-soft:rgba(231,228,219,.07);
+  --display:'Cinzel',Georgia,serif; --body:'Jost',system-ui,sans-serif;
+  --green:#8fb39a;
+}
+@font-face{font-family:'Cinzel';font-weight:400;font-style:normal;font-display:swap;src:url('fonts/cinzel-400.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:300;font-style:normal;font-display:swap;src:url('fonts/jost-300.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:400;font-style:normal;font-display:swap;src:url('fonts/jost-400.woff2') format('woff2')}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+::selection{background:var(--brass);color:var(--ink)}
+h1{font-family:var(--display);font-weight:400}
+a{color:inherit}
+.topbar{display:flex;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line-soft)}
+.topbar-logo{font-family:var(--display);font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none}
+.topbar-logo em{color:var(--brass);font-style:normal}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px}
+.merci-box{text-align:center;max-width:480px}
+.check{display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border:1px solid var(--green);border-radius:50%;margin-bottom:26px;color:var(--green);font-size:1.5rem}
+.eyebrow{font-size:.64rem;letter-spacing:.4em;text-transform:uppercase;color:var(--brass);font-weight:600;display:block;margin-bottom:14px}
+.dot-divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:16px 0 22px}
+.dot-divider i{width:3px;height:3px;border-radius:50%;background:var(--bone-dim);opacity:.5;box-shadow:0 -7px 0 var(--bone-dim)}
+.dot-divider i:nth-child(3){width:3.5px;height:3.5px;background:var(--brass);opacity:1;box-shadow:0 -8px 0 var(--brass),0 8px 0 var(--brass)}
+h1{font-size:1.8rem;letter-spacing:.06em;margin-bottom:18px}
+p{color:var(--bone-dim);font-size:.98rem}
+.order-ref{margin-top:28px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-dim)}
+.order-ref span{color:var(--brass)}
+.back-link{display:inline-block;margin-top:38px;font-size:.64rem;letter-spacing:.3em;text-transform:uppercase;color:var(--bone-dim);border-bottom:1px solid transparent;transition:color .3s,border-color .3s}
+.back-link:hover{color:var(--brass);border-color:rgba(165,184,198,.4)}
+footer{padding:30px 24px;text-align:center;color:var(--bone-dim);font-size:.62rem;letter-spacing:.18em;border-top:1px solid var(--line-soft)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="index.html#accueil">Barbe Noire <em>Tattoo</em></a>
+</div>
+
+<main>
+  <div class="merci-box">
+    <div class="check" aria-hidden="true">✓</div>
+    <span class="eyebrow">Paiement confirmé</span>
+    <h1>Merci pour votre commande</h1>
+    <div class="dot-divider"><i></i><i></i><i></i><i></i><i></i></div>
+    <p>Votre pièce est en préparation. Je reviens vers vous par email dès qu'elle est prête à être découverte.</p>
+    <p class="order-ref" id="orderRefLine" hidden>Référence : <span id="orderRefValue"></span></p>
+    <a class="back-link" href="index.html#accueil">Retour au site</a>
+  </div>
+</main>
+
+<footer>© <span id="year"></span> Barbe Noire Tattoo - Mouvaux, France.</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+/* Affiche la référence de commande si elle est encore disponible dans ce navigateur (facultatif, purement informatif) */
+try{
+  const saved = JSON.parse(localStorage.getItem('bnt_studio_order_ref') || 'null');
+  if(saved && saved.ref){
+    document.getElementById('orderRefValue').textContent = saved.ref;
+    document.getElementById('orderRefLine').hidden = false;
+    localStorage.removeItem('bnt_studio_order_ref');
+  }
+}catch(e){}
+</script>
+</body>
+</html>

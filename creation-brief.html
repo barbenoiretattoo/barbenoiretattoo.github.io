@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Décrivez votre création | Barbe Noire Tattoo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0d10">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230c0b09'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%23b3985f' stroke-width='2' stroke-dasharray='2 6'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23b3985f'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#0b0d10; --ink-2:#10131a; --ink-3:#161b23;
+  --bone:#e7e4db; --bone-dim:#8d95a0; --brass:#a5b8c6;
+  --line:rgba(231,228,219,.13); --line-soft:rgba(231,228,219,.07);
+  --display:'Cinzel',Georgia,serif; --body:'Jost',system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1); --red:#c98b8b; --green:#8fb39a;
+}
+@font-face{font-family:'Cinzel';font-weight:400;font-style:normal;font-display:swap;src:url('fonts/cinzel-400.woff2') format('woff2')}
+@font-face{font-family:'Cinzel';font-weight:500;font-style:normal;font-display:swap;src:url('fonts/cinzel-500.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:300;font-style:normal;font-display:swap;src:url('fonts/jost-300.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:400;font-style:normal;font-display:swap;src:url('fonts/jost-400.woff2') format('woff2')}
+@font-face{font-family:'Jost';font-weight:600;font-style:normal;font-display:swap;src:url('fonts/jost-600.woff2') format('woff2')}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--bone);font-family:var(--body);font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;padding-bottom:120px}
+::selection{background:var(--brass);color:var(--ink)}
+h1,h2,h3{font-family:var(--display);font-weight:400}
+a{color:inherit}
+button{font-family:var(--body);cursor:pointer}
+:focus-visible{outline:1.5px solid var(--brass);outline-offset:3px}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px}
+.eyebrow{font-size:.64rem;letter-spacing:.4em;text-transform:uppercase;color:var(--brass);font-weight:600}
+.dot-divider{display:flex;align-items:center;justify-content:center;gap:14px;margin:16px 0 22px}
+.dot-divider i{width:3px;height:3px;border-radius:50%;background:var(--bone-dim);opacity:.5;box-shadow:0 -7px 0 var(--bone-dim)}
+.dot-divider i:nth-child(3){width:3.5px;height:3.5px;background:var(--brass);opacity:1;box-shadow:0 -8px 0 var(--brass),0 8px 0 var(--brass)}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;border-bottom:1px solid var(--line-soft);background:rgba(11,13,16,.9);position:sticky;top:0;z-index:40;flex-wrap:wrap}
+.topbar-logo{font-family:var(--display);font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none}
+.topbar-logo em{color:var(--brass);font-style:normal}
+
+.brief-head{padding:64px 0 8px;text-align:center}
+.brief-head h1{font-size:1.7rem;letter-spacing:.06em;margin:6px 0 16px}
+.brief-head p{color:var(--bone-dim);font-size:.96rem;max-width:56ch;margin:0 auto}
+
+.offer-recap{margin:30px auto 0;max-width:400px;border:1px solid var(--line);padding:18px 22px;text-align:center;background:var(--ink-2);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.offer-recap .name{font-family:var(--display);font-size:1rem;letter-spacing:.1em;text-transform:uppercase}
+.offer-recap .price{font-family:var(--display);font-size:1.3rem;color:var(--brass)}
+.offer-recap .change{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-dim);border-bottom:1px solid transparent;transition:color .3s,border-color .3s}
+.offer-recap .change:hover{color:var(--brass);border-color:rgba(165,184,198,.4)}
+
+.words-callout{margin:30px auto 0;max-width:520px;text-align:center;color:var(--bone-dim);font-size:.86rem;padding:0 12px}
+.words-callout strong{color:var(--brass)}
+
+.form-main{padding:48px 0 20px}
+.field{margin-bottom:30px}
+.field label{display:block;font-size:.64rem;letter-spacing:.28em;text-transform:uppercase;color:var(--bone-dim);margin-bottom:10px}
+.field label .optional{text-transform:none;letter-spacing:0;opacity:.7}
+.field .hint{font-size:.76rem;color:var(--bone-dim);opacity:.75;margin-top:8px}
+.field-group{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field-group .field-input{width:100%}
+@media (max-width:520px){.field-group{grid-template-columns:1fr}}
+.field-input,.field-textarea{width:100%;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);padding:14px 16px;font-family:var(--body);font-size:.98rem;transition:border-color .3s}
+.field-input:focus,.field-textarea:focus{outline:none;border-color:var(--brass)}
+.field-textarea{resize:vertical;min-height:100px}
+.field-essential{border:1px solid var(--brass);padding:24px 22px;background:rgba(165,184,198,.04)}
+.field-essential label{color:var(--brass)}
+.words-hint{font-size:.72rem;color:var(--bone-dim);margin-top:8px}
+.words-hint.warn{color:var(--red)}
+
+.cover-drop{border:1px dashed var(--line);padding:34px 22px;text-align:center;cursor:pointer;transition:border-color .3s,background .3s}
+.cover-drop:hover,.cover-drop.dragover{border-color:var(--brass);background:rgba(165,184,198,.05)}
+.cover-drop p{color:var(--bone-dim);font-size:.82rem}
+.cover-drop .cd-title{color:var(--bone);font-size:.9rem;margin-bottom:6px}
+.photo-previews{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.photo-preview{position:relative;width:96px;height:96px;border:1px solid var(--line-soft)}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-preview button{position:absolute;top:4px;right:4px;background:rgba(11,13,16,.8);border:1px solid var(--line);color:var(--bone);width:22px;height:22px;font-size:.8rem;line-height:1}
+
+.btn-primary{display:block;text-align:center;border:1px solid var(--line);padding:16px 20px;font-size:.66rem;letter-spacing:.3em;text-transform:uppercase;color:var(--bone);position:relative;overflow:hidden;transition:color .4s,border-color .4s;background:none;width:100%;font-weight:400}
+.btn-primary::before{content:"";position:absolute;inset:0;background:var(--brass);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);z-index:-1}
+.btn-primary:hover:not(:disabled){color:var(--ink);border-color:var(--brass)}
+.btn-primary:hover:not(:disabled)::before{transform:scaleX(1)}
+.btn-primary:disabled{opacity:.4;cursor:default}
+.form-status{min-height:1.4em;margin-top:14px;font-size:.86rem;text-align:center}
+.form-status.error{color:var(--red)}
+.form-status.success{color:var(--green)}
+.privacy-note{font-size:.72rem;color:var(--bone-dim);opacity:.75;text-align:center;margin-bottom:16px;line-height:1.6}
+
+footer{border-top:1px solid var(--line-soft);padding:56px 28px 40px;text-align:center;color:var(--bone-dim);font-size:.68rem;letter-spacing:.22em;margin-top:60px}
+footer .foot-brand{font-family:var(--display);font-size:1rem;letter-spacing:.34em;text-transform:uppercase;color:var(--bone);margin-bottom:18px}
+footer .foot-brand em{color:var(--brass);font-style:normal}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="topbar-logo" href="index.html#accueil">Barbe Noire <em>Tattoo</em></a>
+</div>
+
+<main class="wrap">
+
+  <div class="brief-head">
+    <p class="eyebrow">Créations sur mesure</p>
+    <h1>Décrivez votre création</h1>
+    <div class="dot-divider"><i></i><i></i><i></i><i></i><i></i></div>
+    <p>Le paiement intervient à la toute fin, une fois votre idée transmise. Vous savez exactement ce que vous commandez avant de régler.</p>
+  </div>
+
+  <div class="offer-recap" id="offerRecap">
+    <span class="name" id="offerName">Offre</span>
+    <span class="price" id="offerPrice">—</span>
+    <a class="change" href="creation.html">Changer d'offre</a>
+  </div>
+
+  <p class="words-callout">Le concept repose sur <strong>vos mots, et vos mots seuls</strong>. Tout le reste (photo, commentaire) est facultatif, un simple bonus si vous avez envie de m'en dire plus.</p>
+
+  <div class="form-main" id="formMain">
+    <form id="briefForm" action="https://api.web3forms.com/submit" method="POST">
+      <input type="hidden" name="access_key" value="4615c05b-42d4-44d8-a5c7-5fb5d5a17df0">
+      <input type="hidden" name="subject" value="Nouvelle création Barbe Noire Studio">
+      <input type="hidden" name="from_name" value="Formulaire Créations (barbenoiretattoo.com)">
+      <input type="hidden" name="reference" id="referenceField" value="">
+      <input type="hidden" name="offre" id="offerField" value="">
+      <input type="hidden" name="botcheck" style="display:none">
+
+      <div class="field field-essential">
+        <label for="wordsInput">Vos mots, l'essentiel (3 à 5)</label>
+        <input class="field-input" type="text" id="wordsInput" name="mots_cles" placeholder="ex. chien, montagne, randonnée" required>
+        <p class="words-hint" id="wordsHint">0 mot détecté</p>
+      </div>
+
+      <div class="field">
+        <label for="emailInput">Votre email</label>
+        <input class="field-input" type="email" id="emailInput" name="email" placeholder="pour vous recontacter" required>
+      </div>
+
+      <div id="shippingFields" hidden>
+        <div class="field">
+          <label for="shipNameInput">Nom complet (destinataire)</label>
+          <input class="field-input" type="text" id="shipNameInput" name="nom_complet" placeholder="Prénom et nom">
+        </div>
+        <div class="field">
+          <label for="shipAddressInput">Adresse</label>
+          <input class="field-input" type="text" id="shipAddressInput" name="adresse" placeholder="Numéro et rue">
+          <input class="field-input" type="text" id="shipAddress2Input" name="complement_adresse" placeholder="Complément d'adresse (facultatif)" style="margin-top:10px">
+        </div>
+        <div class="field field-group">
+          <div>
+            <label for="shipZipInput">Code postal</label>
+            <input class="field-input" type="text" id="shipZipInput" name="code_postal" placeholder="59420">
+          </div>
+          <div>
+            <label for="shipCityInput">Ville</label>
+            <input class="field-input" type="text" id="shipCityInput" name="ville" placeholder="Mouvaux">
+          </div>
+        </div>
+        <div class="field">
+          <label for="shipCountryInput">Pays</label>
+          <input class="field-input" type="text" id="shipCountryInput" name="pays" value="France">
+        </div>
+        <p class="words-callout" style="margin-top:-14px;margin-bottom:26px;text-align:left">Cette adresse sert uniquement à l'impression et à l'expédition de votre pièce.</p>
+      </div>
+
+      <div class="field">
+        <label>Photo(s) de référence <span class="optional">(facultatif : un bonus, pas une obligation)</span></label>
+        <div class="cover-drop" id="photoDrop">
+          <p class="cd-title">Glissez une ou plusieurs photos ici, ou cliquez pour choisir</p>
+          <p>Compression automatique avant envoi (jusqu'à 3 photos)</p>
+          <input type="file" id="photoInput" accept="image/*" multiple hidden>
+        </div>
+        <div class="photo-previews" id="photoPreviews"></div>
+      </div>
+
+      <div class="field">
+        <label for="commentInput">Commentaire libre <span class="optional">(facultatif)</span></label>
+        <textarea class="field-textarea" id="commentInput" name="commentaire" placeholder="Une histoire, un contexte, un détail important..."></textarea>
+      </div>
+
+      <p class="privacy-note">Vos informations (mots-clés, email, photo éventuelle) servent uniquement à créer votre pièce. Elles ne sont jamais partagées ni revendues, et vous pouvez en demander la suppression à tout moment en m'écrivant.</p>
+      <button class="btn-primary" type="submit" id="submitBtn">Continuer vers le paiement sécurisé</button>
+      <p class="form-status" id="formStatus" role="status"></p>
+    </form>
+  </div>
+
+</main>
+
+<footer>
+  <p class="foot-brand">Barbe Noire <em>Tattoo</em></p>
+  <p>© <span id="year"></span> Barbe Noire Tattoo - Mouvaux, France.</p>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ═══════════════════════════════════════════════════════
+   CONFIGURATION — mêmes offres que creation.html, à garder
+   synchronisées si vous changez les prix.
+   ═══════════════════════════════════════════════════════ */
+const OFFERS = {
+  digital: { name: 'Digital',              price: '45 €',  stripeLink: 'https://buy.stripe.com/14AdR23nneuzaHpc030Jq00' },
+  print:   { name: 'Print',                price: '90 €',  stripeLink: 'https://buy.stripe.com/00waEQ3nn2LR7vd9RV0Jq01' },
+  frame:   { name: 'Print + Encadrement',  price: '150 €', stripeLink: 'https://buy.stripe.com/6oU28k4rrgCHcPx2pt0Jq02' }
+};
+const ORDER_REF_KEY = 'bnt_studio_order_ref';
+
+const params = new URLSearchParams(window.location.search);
+const offerKey = params.get('offer') || 'digital';
+const offer = OFFERS[offerKey] || OFFERS.digital;
+document.getElementById('offerName').textContent = offer.name;
+document.getElementById('offerPrice').textContent = offer.price;
+document.getElementById('offerField').value = offer.name;
+document.getElementById('submitBtn').textContent = `Continuer vers le paiement sécurisé (${offer.price})`;
+
+/* Adresse de livraison : uniquement nécessaire pour Print et Print+Encadrement */
+const needsShipping = offerKey === 'print' || offerKey === 'frame';
+const shippingFields = document.getElementById('shippingFields');
+shippingFields.hidden = !needsShipping;
+if(needsShipping){
+  ['shipNameInput','shipAddressInput','shipZipInput','shipCityInput','shipCountryInput'].forEach(id => {
+    document.getElementById(id).required = true;
+  });
+}
+
+/* Génère une référence de commande courte et unique, à la volée */
+function generateOrderRef(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans caractères ambigus (0/O, 1/I)
+  let ref = 'BNT-';
+  for(let i = 0; i < 6; i++) ref += chars[Math.floor(Math.random() * chars.length)];
+  return ref;
+}
+const orderRef = generateOrderRef();
+document.getElementById('referenceField').value = orderRef;
+
+/* ═══════════ Compteur de mots-clés ═══════════ */
+const wordsInput = document.getElementById('wordsInput');
+const wordsHint = document.getElementById('wordsHint');
+function updateWordsHint(){
+  const words = wordsInput.value.split(/[,\s]+/).map(w => w.trim()).filter(Boolean);
+  const n = words.length;
+  wordsHint.textContent = n + (n <= 1 ? ' mot détecté' : ' mots détectés');
+  wordsHint.classList.toggle('warn', n > 0 && (n < 3 || n > 5));
+}
+wordsInput.addEventListener('input', updateWordsHint);
+
+/* ═══════════ Compression d'image (même principe que redaction.html) ═══════════ */
+function compressImage(file, maxWidth, quality){
+  maxWidth = maxWidth || 1400; quality = quality || 0.8;
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if(width > maxWidth){ height = Math.round(height * (maxWidth / width)); width = maxWidth; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Compression impossible')), 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image illisible')); };
+    img.src = url;
+  });
+}
+
+/* ═══════════ Photos de référence : glisser-déposer, aperçu, compression ═══════════ */
+const MAX_PHOTOS = 3;
+let pendingPhotos = []; // [{blob, name}]
+const photoDrop = document.getElementById('photoDrop');
+const photoInput = document.getElementById('photoInput');
+const photoPreviews = document.getElementById('photoPreviews');
+
+async function addPhotoFiles(fileList){
+  const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+  for(const file of files){
+    if(pendingPhotos.length >= MAX_PHOTOS) break;
+    try{
+      const blob = await compressImage(file);
+      pendingPhotos.push({ blob, name: file.name.replace(/\.[a-z]+$/i, '') + '.jpg' });
+    }catch(e){ /* fichier ignoré si illisible */ }
+  }
+  renderPhotoPreviews();
+  syncFileInput();
+}
+function renderPhotoPreviews(){
+  photoPreviews.innerHTML = '';
+  pendingPhotos.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'photo-preview';
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(p.blob);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.textContent = '×'; btn.setAttribute('aria-label','Retirer');
+    btn.addEventListener('click', () => { pendingPhotos.splice(i,1); renderPhotoPreviews(); syncFileInput(); });
+    div.appendChild(img); div.appendChild(btn);
+    photoPreviews.appendChild(div);
+  });
+}
+/* Reconstruit le FileList réel de l'input (nécessaire pour l'envoi natif du formulaire) */
+function syncFileInput(){
+  const dt = new DataTransfer();
+  pendingPhotos.forEach(p => dt.items.add(new File([p.blob], p.name, { type:'image/jpeg' })));
+  photoInput.files = dt.files;
+}
+photoDrop.addEventListener('click', () => photoInput.click());
+photoInput.addEventListener('change', () => addPhotoFiles(photoInput.files));
+['dragover','dragenter'].forEach(evt => photoDrop.addEventListener(evt, e => { e.preventDefault(); photoDrop.classList.add('dragover'); }));
+['dragleave','drop'].forEach(evt => photoDrop.addEventListener(evt, e => { e.preventDefault(); photoDrop.classList.remove('dragover'); }));
+photoDrop.addEventListener('drop', e => addPhotoFiles(e.dataTransfer.files));
+
+/* ═══════════ Envoi du brief, puis redirection vers le paiement Stripe ═══════════ */
+const briefForm = document.getElementById('briefForm');
+const submitBtn = document.getElementById('submitBtn');
+const formStatus = document.getElementById('formStatus');
+
+briefForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const accessKey = briefForm.access_key.value;
+  if(!accessKey || accessKey.includes('TODO')){
+    formStatus.textContent = 'Le formulaire n’est pas encore configuré (clé Web3Forms à compléter dans creation-brief.html).';
+    formStatus.className = 'form-status error';
+    return;
+  }
+  if(!offer.stripeLink || offer.stripeLink.includes('TODO')){
+    formStatus.textContent = 'Le paiement en ligne n’est pas encore configuré pour cette offre (lien Stripe à compléter dans creation-brief.html).';
+    formStatus.className = 'form-status error';
+    return;
+  }
+  const words = wordsInput.value.split(/[,\s]+/).map(w => w.trim()).filter(Boolean);
+  if(words.length === 0){
+    formStatus.textContent = 'Merci d’indiquer au moins un mot pour démarrer votre création.';
+    formStatus.className = 'form-status error';
+    wordsInput.focus();
+    return;
+  }
+  /* En dehors de 3 à 5 mots, on n'empêche pas l'envoi : le compteur au-dessus
+     l'a déjà signalé en rouge, mais on ne recale jamais un client aussi près du but. */
+  submitBtn.disabled = true;
+  formStatus.textContent = 'Envoi de votre demande…';
+  formStatus.className = 'form-status';
+  try{
+    const res = await fetch(briefForm.action, { method: 'POST', body: new FormData(briefForm) });
+    const data = await res.json().catch(() => ({}));
+    if(res.ok && data.success !== false){
+      try{ localStorage.setItem(ORDER_REF_KEY, JSON.stringify({ ref: orderRef, offer: offerKey, date: new Date().toISOString() })); }catch(err){}
+      formStatus.textContent = 'C’est envoyé, redirection vers le paiement sécurisé…';
+      formStatus.className = 'form-status success';
+      window.location.href = `${offer.stripeLink}?client_reference_id=${encodeURIComponent(orderRef)}`;
+    } else {
+      throw new Error(data.message || 'Erreur lors de l’envoi.');
+    }
+  }catch(err){
+    formStatus.textContent = 'Erreur : ' + err.message + '. Vous pouvez réessayer, ou m’écrire directement en message privé.';
+    formStatus.className = 'form-status error';
+    submitBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
