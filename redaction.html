@@ -771,9 +771,9 @@ async function persistPendingImages(slug){
    était retirée. On les relit dans le corps enregistré, ce qui est exact —
    filtrer sur le préfixe du slug attraperait les images d'un slug plus long
    (« abc » et « abc-def » partagent le préfixe « abc- »). */
+function escapeRegExp(str){ return (str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function bodyImagePaths(bodyHTML){
-  const origin = SITE_ORIGIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(origin + '/(chroniques/images/[^"\'\\s>]+)', 'g');
+  const re = new RegExp(escapeRegExp(SITE_ORIGIN) + '/(chroniques/images/[^"\'\\s>]+)', 'g');
   const out = [];
   let m;
   while((m = re.exec(bodyHTML || ''))){ if(out.indexOf(m[1]) < 0) out.push(m[1]); }
@@ -967,16 +967,38 @@ async function updateChroniquesIndex(posts){
   await ghPutFile('chroniques/index.html', utf8ToBase64(updated), 'Chroniques : mise à jour de la liste des articles', existing.sha);
 }
 
+/* Bloc <url> d'un article dans sitemap.xml, quel que soit son formatage. */
+function sitemapEntryRegExp(url){
+  return new RegExp('[ \\t]*<url>\\s*<loc>' + escapeRegExp(url) + '</loc>[\\s\\S]*?</url>\\n?');
+}
 async function updateSitemap(slug, dateISO){
   const existing = await ghGetFile('sitemap.xml');
   if(!existing) return;
-  let xml = base64ToUtf8(existing.content);
+  const xml = base64ToUtf8(existing.content);
   const url = toSiteUrl(`chroniques/${slug}/`);
-  if(xml.includes(`<loc>${url}</loc>`)) return;
-  if(!xml.includes('</urlset>')) return;
   const entry = `  <url>\n    <loc>${url}</loc>\n    <lastmod>${dateISO}</lastmod>\n  </url>\n`;
-  xml = xml.replace('</urlset>', entry + '</urlset>');
-  await ghPutFile('sitemap.xml', utf8ToBase64(xml), `Chroniques : ajout au plan du site (${slug})`, existing.sha);
+  const block = sitemapEntryRegExp(url);
+  let updated;
+  if(block.test(xml)){
+    /* Republication : on rafraîchit lastmod. L'ancienne version abandonnait
+       ici, et la date restait figée à la première mise en ligne. */
+    updated = xml.replace(block, entry);
+  } else {
+    if(!xml.includes('</urlset>')) return;
+    updated = xml.replace('</urlset>', entry + '</urlset>');
+  }
+  if(updated === xml) return;
+  await ghPutFile('sitemap.xml', utf8ToBase64(updated), `Chroniques : plan du site (${slug})`, existing.sha);
+}
+/* Rien ne retirait l'article du plan du site à sa suppression : l'URL y restait
+   et Google allait crawler une page 404. */
+async function removeFromSitemap(slug){
+  const existing = await ghGetFile('sitemap.xml');
+  if(!existing) return;
+  const xml = base64ToUtf8(existing.content);
+  const updated = xml.replace(sitemapEntryRegExp(toSiteUrl(`chroniques/${slug}/`)), '');
+  if(updated === xml) return;
+  await ghPutFile('sitemap.xml', utf8ToBase64(updated), `Chroniques : retrait du plan du site (${slug})`, existing.sha);
 }
 
 /* ═══════════ Enregistrer / Publier / Supprimer ═══════════ */
@@ -1064,6 +1086,7 @@ async function deleteArticleBySlug(slug, titleForConfirm){
       await ghDeleteFile(`chroniques/${slug}/index.html`, `Chroniques : suppression « ${slug} »`).catch(() => {});
       const posts = await removeFromManifest(slug);
       await updateChroniquesIndex(posts);
+      try{ await removeFromSitemap(slug); }catch(e){ console.warn('sitemap.xml non mis à jour :', e); }
     }
     if(data.cover){
       await ghDeleteFile(data.cover, `Chroniques : suppression photo (${slug})`).catch(() => {});
