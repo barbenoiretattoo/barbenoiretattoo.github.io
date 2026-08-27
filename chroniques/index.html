@@ -68,7 +68,22 @@
 
   <section class="blog-list wrap" aria-label="Articles des Chroniques">
     <div class="article-grid" id="articleGrid">
-      <p class="article-empty" id="articleEmpty">Les Chroniques se préparent : le premier article arrive bientôt.</p>
+      <!-- ARTICLES:START -->
+      <a class="article-card reveal" href="comment-bien-choisir-son-tatoueur-pour-un-projet-personnalise/">
+        <span class="plaque"><img src="https://www.barbenoiretattoo.com/chroniques/images/comment-bien-choisir-son-tatoueur-pour-un-projet-personnalise-couverture.jpg" alt="Réalisation d’un tatouage sur mesure avec la cliente." loading="lazy" decoding="async"></span>
+        <span class="plate article-date">25 août 2026</span>
+        <h2>Comment bien choisir son tatoueur pour un projet personnalisé ?</h2>
+        <p class="excerpt">Découvrez les critères essentiels pour choisir votre tatoueur : style artistique, portfolio, inspirations, méthode de travail, feeling…</p>
+        <span class="read-more">Lire l’article →</span>
+      </a>
+      <a class="article-card reveal" href="pourquoi-choisir-un-cabinet-prive-de-tatouage/">
+        <span class="plaque"><img src="https://www.barbenoiretattoo.com/chroniques/images/pourquoi-choisir-un-cabinet-prive-de-tatouage-couverture.jpg" alt="tatouage Mouvaux Lille" loading="lazy" decoding="async"></span>
+        <span class="plate article-date">9 août 2026</span>
+        <h2>pourquoi choisir un cabinet privé de tatouage ?</h2>
+        <p class="excerpt">Pourquoi choisir un cabinet privé de tatouage ? Découvrez les avantages d&#39;un tatouage personnalisé, dans un espace calme et intime à Mouvaux, près de Lille.</p>
+        <span class="read-more">Lire l’article →</span>
+      </a>
+      <!-- ARTICLES:END -->
     </div>
   </section>
 </main>
@@ -109,78 +124,5 @@
 </div>
 
 <script src="chroniques.js"></script>
-<script>
-/* ═══════════ Liste des articles publiés (manifest.json) ═══════════ */
-const articleGrid = document.getElementById('articleGrid');
-const articleEmpty = document.getElementById('articleEmpty');
-
-function formatDate(iso){
-  try{
-    return new Date(iso + 'T12:00:00').toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
-  }catch(e){ return iso; }
-}
-
-async function renderArticles(){
-  let posts = [];
-  try{
-    const res = await fetch('manifest.json', { cache:'no-store' });
-    if(res.ok) posts = await res.json();
-  }catch(e){ /* pas encore d'article publié */ }
-
-  posts = (posts || []).filter(p => p && p.slug).sort((a,b) => (b.date||'').localeCompare(a.date||''));
-
-  if(!posts.length){
-    articleEmpty.style.display = 'block';
-    return;
-  }
-  articleEmpty.style.display = 'none';
-
-  posts.forEach(post => {
-    const card = document.createElement('a');
-    card.className = 'article-card reveal';
-    card.href = `${post.slug}/`;
-
-    const plaque = document.createElement('span');
-    plaque.className = 'plaque';
-    if(post.cover){
-      const img = document.createElement('img');
-      img.src = post.cover;
-      img.alt = post.coverAlt || post.title || '';
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      plaque.appendChild(img);
-    }
-    card.appendChild(plaque);
-
-    const date = document.createElement('span');
-    date.className = 'plate article-date';
-    date.textContent = formatDate(post.date);
-    card.appendChild(date);
-
-    const h2 = document.createElement('h2');
-    h2.textContent = post.title || '';
-    card.appendChild(h2);
-
-    if(post.summary){
-      const p = document.createElement('p');
-      p.className = 'excerpt';
-      p.textContent = post.summary;
-      card.appendChild(p);
-    }
-
-    const more = document.createElement('span');
-    more.className = 'read-more';
-    more.textContent = 'Lire l\u2019article →';
-    card.appendChild(more);
-
-    articleGrid.appendChild(card);
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
-    }, {threshold:.1});
-    io.observe(card);
-  });
-}
-renderArticles();
-</script>
 </body>
 </html>

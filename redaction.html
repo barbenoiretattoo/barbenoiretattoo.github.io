@@ -839,15 +839,68 @@ async function updateManifest(entry){
   const idx = list.findIndex(p => p.slug === entry.slug);
   if(idx >= 0) list[idx] = entry; else list.push(entry);
   await ghPutFile('chroniques/manifest.json', utf8ToBase64(JSON.stringify(list, null, 2)), `Chroniques : liste (${entry.slug})`, existing ? existing.sha : undefined);
+  return list;
 }
 async function removeFromManifest(slug){
   const existing = await ghGetFile('chroniques/manifest.json');
-  if(!existing) return;
+  if(!existing) return [];
   let list = [];
   try{ list = JSON.parse(base64ToUtf8(existing.content)); }catch(e){ list = []; }
   list = list.filter(p => p.slug !== slug);
   await ghPutFile('chroniques/manifest.json', utf8ToBase64(JSON.stringify(list, null, 2)), `Chroniques : retrait de la liste (${slug})`, existing.sha);
+  return list;
 }
+/* ═══════════ Page Chroniques : cartes écrites en dur dans le HTML ═══════════
+   chroniques/index.html ne dépend plus de manifest.json pour afficher la liste :
+   les liens <a> sont écrits entre les deux marqueurs ci-dessous à chaque
+   publication et à chaque suppression. Même principe que updateSitemap().    */
+const ARTICLES_START = '<!-- ARTICLES:START -->';
+const ARTICLES_END   = '<!-- ARTICLES:END -->';
+const ARTICLES_EMPTY_HTML = '      <p class="article-empty">Les Chroniques se préparent : le premier article arrive bientôt.</p>';
+
+function formatDateFR(iso){
+  const d = new Date((iso || '') + 'T12:00:00');
+  if(isNaN(d)) return iso || '';
+  return d.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+}
+
+/* Reproduit exactement la structure que renderArticles() créait côté client. */
+function renderArticleCardsHTML(posts){
+  const list = (posts || []).filter(p => p && p.slug)
+    .slice().sort((a,b) => (b.date||'').localeCompare(a.date||''));
+  if(!list.length) return ARTICLES_EMPTY_HTML;
+
+  return list.map(post => {
+    const img = post.cover
+      ? `<img src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.coverAlt || post.title || '')}" loading="lazy" decoding="async">`
+      : '';
+    const lines = [
+      `        <span class="plaque">${img}</span>`,
+      `        <span class="plate article-date">${escapeHtml(formatDateFR(post.date))}</span>`,
+      `        <h2>${escapeHtml(post.title || '')}</h2>`
+    ];
+    if(post.summary) lines.push(`        <p class="excerpt">${escapeHtml(post.summary)}</p>`);
+    lines.push(`        <span class="read-more">Lire l\u2019article →</span>`);
+    return `      <a class="article-card reveal" href="${escapeHtml(post.slug)}/">\n${lines.join('\n')}\n      </a>`;
+  }).join('\n');
+}
+
+async function updateChroniquesIndex(posts){
+  const existing = await ghGetFile('chroniques/index.html');
+  if(!existing) return;
+  const html = base64ToUtf8(existing.content);
+  const start = html.indexOf(ARTICLES_START);
+  const end = html.indexOf(ARTICLES_END);
+  if(start < 0 || end < 0 || end < start){
+    throw new Error('Marqueurs ARTICLES:START / ARTICLES:END introuvables dans chroniques/index.html.');
+  }
+  const updated = html.slice(0, start + ARTICLES_START.length)
+    + '\n' + renderArticleCardsHTML(posts) + '\n      '
+    + html.slice(end);
+  if(updated === html) return;
+  await ghPutFile('chroniques/index.html', utf8ToBase64(updated), 'Chroniques : mise à jour de la liste des articles', existing.sha);
+}
+
 async function updateSitemap(slug, dateISO){
   const existing = await ghGetFile('sitemap.xml');
   if(!existing) return;
@@ -915,7 +968,10 @@ async function publish(){
     await ghUpsertFile(`chroniques/${v.slug}/index.html`, utf8ToBase64(html), `Chroniques : publication « ${v.title} »`);
 
     setStatus('Mise à jour de la liste des articles…');
-    await updateManifest({ slug: v.slug, title: v.title, summary, date: dateISO, cover: currentCoverPath ? toSiteUrl(currentCoverPath) : '', coverAlt });
+    const posts = await updateManifest({ slug: v.slug, title: v.title, summary, date: dateISO, cover: currentCoverPath ? toSiteUrl(currentCoverPath) : '', coverAlt });
+
+    setStatus('Mise à jour de la page Chroniques…');
+    await updateChroniquesIndex(posts);
 
     setStatus('Mise à jour du plan du site…');
     try{ await updateSitemap(v.slug, dateISO); }catch(e){ console.warn('sitemap.xml non mis à jour :', e); }
@@ -936,7 +992,8 @@ async function deleteArticleBySlug(slug, titleForConfirm){
     const data = file ? JSON.parse(base64ToUtf8(file.content)) : {};
     if(data.status === 'published'){
       await ghDeleteFile(`chroniques/${slug}/index.html`, `Chroniques : suppression « ${slug} »`).catch(() => {});
-      await removeFromManifest(slug);
+      const posts = await removeFromManifest(slug);
+      await updateChroniquesIndex(posts);
     }
     if(data.cover) await ghDeleteFile(data.cover, `Chroniques : suppression photo (${slug})`).catch(() => {});
     await ghDeleteFile(`chroniques/sources/${slug}.json`, `Chroniques : suppression source (${slug})`).catch(() => {});
