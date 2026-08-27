@@ -307,8 +307,12 @@ function blobToBase64(blob){
 }
 
 /* ═══════════ Compression d'image (canvas, 100% navigateur) ═══════════ */
-function compressImage(file, maxWidth, quality){
-  maxWidth = maxWidth || 1600; quality = quality || 0.82;
+function canvasToBlob(canvas, type, quality){
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression impossible')), type, quality);
+  });
+}
+function drawToCanvas(file, maxWidth){
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -319,11 +323,30 @@ function compressImage(file, maxWidth, quality){
       const canvas = document.createElement('canvas');
       canvas.width = width; canvas.height = height;
       canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-      canvas.toBlob(blob => blob ? resolve({ blob, width, height }) : reject(new Error('Compression impossible')), 'image/jpeg', quality);
+      resolve({ canvas, width, height });
     };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image illisible')); };
     img.src = url;
   });
+}
+/* Exporte en WebP, avec repli automatique sur le JPEG.
+   Attention : canvas.toBlob() ne signale pas un type refusé — la spécification
+   lui demande de retomber silencieusement sur le PNG. On ne peut donc pas se
+   fier à un try/catch : on vérifie blob.type, seul indicateur fiable.
+   withJpegTwin : produit en plus une copie JPEG de la même image, destinée à
+   og:image (voir buildArticleHTML). */
+async function compressImage(file, maxWidth, quality, withJpegTwin){
+  maxWidth = maxWidth || 1600; quality = quality || 0.82;
+  const { canvas, width, height } = await drawToCanvas(file, maxWidth);
+  let blob = await canvasToBlob(canvas, 'image/webp', quality).catch(() => null);
+  let ext = 'webp';
+  if(!blob || blob.type !== 'image/webp'){
+    blob = await canvasToBlob(canvas, 'image/jpeg', quality);
+    ext = 'jpg';
+  }
+  const out = { blob, width, height, ext };
+  if(withJpegTwin && ext === 'webp') out.jpegBlob = await canvasToBlob(canvas, 'image/jpeg', quality);
+  return out;
 }
 
 /* ═══════════ GitHub Contents API ═══════════ */
@@ -402,7 +425,10 @@ const publishBtn = document.getElementById('publishBtn');
 const deleteBtn = document.getElementById('deleteBtn');
 
 let currentArticle = null;      // article chargé (null = nouvel article)
-let currentCoverPath = null;    // chemin dans le dépôt, ex. chroniques/images/mon-slug-couverture.jpg
+let currentCoverPath = null;    // chemin dans le dépôt, ex. chroniques/images/mon-slug-couverture.webp
+let pendingCoverExt = 'webp';   // extension réellement produite par le navigateur
+let pendingCoverJpegBlob = null; // copie JPEG de la couverture, pour og:image
+let pendingCoverW = 0, pendingCoverH = 0; // dimensions réelles, pour og:image:width/height
 let pendingCoverBlob = null;    // nouvelle photo pas encore envoyée
 let pendingBodyImages = {};     // images du texte pas encore envoyées {id: blob}
 let slugTouched = false;
@@ -466,11 +492,21 @@ async function handleCoverFile(file){
   if(!file || !file.type.startsWith('image/')) return;
   setStatus('Compression de la photo…');
   try{
-    const { blob } = await compressImage(file, 1600, 0.82);
+    const { blob, ext, jpegBlob, width, height } = await compressImage(file, 1600, 0.82, true);
     pendingCoverBlob = blob;
+    pendingCoverExt = ext;
+    pendingCoverJpegBlob = jpegBlob || null;
+    pendingCoverW = width; pendingCoverH = height;
     coverPreviewImg.src = URL.createObjectURL(blob);
     coverPreview.hidden = false;
-    setStatus(`Photo prête (${Math.round(blob.size/1024)} Ko).`);
+    /* Facebook et LinkedIn n'affichent un grand aperçu qu'à partir de 600px de
+       large ; en dessous, le lien partagé sort en petite vignette. On ne
+       redimensionne jamais vers le haut, on prévient donc au moment du dépôt. */
+    if(width < 600){
+      setStatus(`Photo prête (${Math.round(blob.size/1024)} Ko, ${ext.toUpperCase()}) — attention : ${width}px de large seulement. En dessous de 600px, Facebook et LinkedIn afficheront un petit aperçu. Une photo d'au moins 1200px est conseillée.`, true);
+    } else {
+      setStatus(`Photo prête (${Math.round(blob.size/1024)} Ko, ${ext.toUpperCase()}, ${width}\u00d7${height}).`);
+    }
   }catch(e){ setStatus('Impossible de traiter cette image : ' + e.message, true); }
 }
 ['dragover','dragenter'].forEach(evt => coverDrop.addEventListener(evt, e => { e.preventDefault(); coverDrop.classList.add('dragover'); }));
@@ -530,9 +566,9 @@ articleBody.addEventListener('drop', async e => {
     e.preventDefault();
     setStatus('Compression de l\u2019image…');
     try{
-      const { blob } = await compressImage(file, 1200, 0.8);
+      const { blob, ext } = await compressImage(file, 1200, 0.8);
       const id = 'img' + Math.random().toString(36).slice(2,9);
-      pendingBodyImages[id] = blob;
+      pendingBodyImages[id] = { blob, ext };
       const img = document.createElement('img');
       img.src = URL.createObjectURL(blob);
       img.dataset.pending = id;
@@ -705,33 +741,63 @@ articleBody.addEventListener('paste', e => {
 async function persistPendingImages(slug){
   if(pendingCoverBlob){
     setStatus('Envoi de la photo de couverture…');
-    const path = `chroniques/images/${slug}-couverture.jpg`;
+    const path = `chroniques/images/${slug}-couverture.${pendingCoverExt}`;
     await ghUpsertFile(path, await blobToBase64(pendingCoverBlob), `Chroniques : photo de couverture (${slug})`);
+    /* Copie JPEG au même chemin, pour og:image uniquement (buildArticleHTML). */
+    if(pendingCoverJpegBlob){
+      setStatus('Envoi de la vignette de partage…');
+      await ghUpsertFile(path.replace(/\.webp$/i, '.jpg'), await blobToBase64(pendingCoverJpegBlob), `Chroniques : vignette de partage (${slug})`);
+    }
     currentCoverPath = path;
     pendingCoverBlob = null;
+    pendingCoverJpegBlob = null;
   }
   const imgs = articleBody.querySelectorAll('img[data-pending]');
   for(const img of imgs){
     const id = img.dataset.pending;
-    const blob = pendingBodyImages[id];
-    if(!blob) continue;
+    const pending = pendingBodyImages[id];
+    if(!pending) continue;
     setStatus('Envoi d\u2019une image du texte…');
-    const path = `chroniques/images/${slug}-${id}.jpg`;
-    await ghUpsertFile(path, await blobToBase64(blob), `Chroniques : image dans le texte (${slug})`);
+    const path = `chroniques/images/${slug}-${id}.${pending.ext}`;
+    await ghUpsertFile(path, await blobToBase64(pending.blob), `Chroniques : image dans le texte (${slug})`);
     img.src = toSiteUrl(path);
     img.removeAttribute('data-pending');
     delete pendingBodyImages[id];
   }
 }
 
+/* Chemins dépôt des images insérées dans le texte. Elles restaient orphelines
+   dans chroniques/images/ à la suppression d'un article : seule la couverture
+   était retirée. On les relit dans le corps enregistré, ce qui est exact —
+   filtrer sur le préfixe du slug attraperait les images d'un slug plus long
+   (« abc » et « abc-def » partagent le préfixe « abc- »). */
+function bodyImagePaths(bodyHTML){
+  const origin = SITE_ORIGIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(origin + '/(chroniques/images/[^"\'\\s>]+)', 'g');
+  const out = [];
+  let m;
+  while((m = re.exec(bodyHTML || ''))){ if(out.indexOf(m[1]) < 0) out.push(m[1]); }
+  return out;
+}
+
 /* ═══════════ Génération de la page article statique ═══════════ */
 function buildArticleHTML(data){
   const url = toSiteUrl(`chroniques/${data.slug}/`);
   const coverUrl = data.coverPath ? toSiteUrl(data.coverPath) : `${SITE_ORIGIN}/og-image.jpg`;
+  /* La page affiche le WebP ; og:image déclare la copie JPEG, au même chemin.
+     Facebook, LinkedIn et WhatsApp ne produisent pas d'aperçu fiable en WebP.
+     Sur une couverture déjà en .jpg (article ancien, ou navigateur sans
+     encodeur WebP) le remplacement ne fait rien : les deux URL sont égales. */
+  const ogImageUrl = coverUrl.replace(/\.webp$/i, '.jpg');
+  /* Dimensions réelles de la couverture. Elles n'existent que pour les articles
+     publiés après cette version : mieux vaut ne rien déclarer que déclarer faux. */
+  const ogImageSize = (data.coverWidth && data.coverHeight)
+    ? `\n<meta property="og:image:width" content="${data.coverWidth}">\n<meta property="og:image:height" content="${data.coverHeight}">`
+    : '';
   const dateDisplay = new Date(data.dateISO + 'T12:00:00').toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
   const ld = {
     "@context":"https://schema.org","@type":"BlogPosting",
-    "headline": data.title, "description": data.summary, "image": coverUrl,
+    "headline": data.title, "description": data.summary, "image": ogImageUrl,
     "datePublished": data.dateISO, "dateModified": data.dateISO, "inLanguage":"fr-FR",
     "author": { "@type":"Organization", "name":"Barbe Noire Tattoo", "@id": `${SITE_ORIGIN}/#barbenoire` },
     "publisher": { "@type":"Organization", "name":"Barbe Noire Tattoo", "@id": `${SITE_ORIGIN}/#barbenoire` },
@@ -760,8 +826,8 @@ function buildArticleHTML(data){
 <meta property="og:title" content="${escapeHtml(data.title)}">
 <meta property="og:description" content="${escapeHtml(data.summary)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${coverUrl}">
-<meta property="og:image:width" content="1600">
+<meta property="og:image" content="${ogImageUrl}">
+<meta property="og:image:type" content="image/jpeg">${ogImageSize}
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 ${ldJson}
@@ -933,6 +999,8 @@ async function saveDraft(){
       title: v.title, slug: v.slug,
       summary: summaryInput.value.trim(),
       cover: currentCoverPath, coverAlt: coverAltInput.value.trim(),
+      coverWidth: pendingCoverW || (currentArticle && currentArticle.coverWidth) || 0,
+      coverHeight: pendingCoverH || (currentArticle && currentArticle.coverHeight) || 0,
       bodyHTML: articleBody.innerHTML,
       date: (currentArticle && currentArticle.date) || todayISO(),
       status: (currentArticle && currentArticle.status === 'published') ? 'published' : 'draft'
@@ -959,12 +1027,14 @@ async function publish(){
     const coverAlt = coverAltInput.value.trim() || v.title;
     const bodyHTML = articleBody.innerHTML;
 
-    const sourceData = { title: v.title, slug: v.slug, summary, cover: currentCoverPath, coverAlt, bodyHTML, date: dateISO, status:'published' };
+    const coverW = pendingCoverW || (currentArticle && currentArticle.coverWidth) || 0;
+    const coverH = pendingCoverH || (currentArticle && currentArticle.coverHeight) || 0;
+    const sourceData = { title: v.title, slug: v.slug, summary, cover: currentCoverPath, coverAlt, coverWidth: coverW, coverHeight: coverH, bodyHTML, date: dateISO, status:'published' };
     setStatus('Écriture de la fiche article…');
     await ghUpsertFile(`chroniques/sources/${v.slug}.json`, utf8ToBase64(JSON.stringify(sourceData, null, 2)), `Chroniques : source « ${v.title} »`);
 
     setStatus('Génération de la page…');
-    const html = buildArticleHTML({ title: v.title, slug: v.slug, summary, coverPath: currentCoverPath, coverAlt, bodyHTML, dateISO });
+    const html = buildArticleHTML({ title: v.title, slug: v.slug, summary, coverPath: currentCoverPath, coverAlt, coverWidth: coverW, coverHeight: coverH, bodyHTML, dateISO });
     await ghUpsertFile(`chroniques/${v.slug}/index.html`, utf8ToBase64(html), `Chroniques : publication « ${v.title} »`);
 
     setStatus('Mise à jour de la liste des articles…');
@@ -995,7 +1065,15 @@ async function deleteArticleBySlug(slug, titleForConfirm){
       const posts = await removeFromManifest(slug);
       await updateChroniquesIndex(posts);
     }
-    if(data.cover) await ghDeleteFile(data.cover, `Chroniques : suppression photo (${slug})`).catch(() => {});
+    if(data.cover){
+      await ghDeleteFile(data.cover, `Chroniques : suppression photo (${slug})`).catch(() => {});
+      /* la copie JPEG servant d'og:image, si la couverture était en WebP */
+      const ogTwin = data.cover.replace(/\.webp$/i, '.jpg');
+      if(ogTwin !== data.cover) await ghDeleteFile(ogTwin, `Chroniques : suppression vignette de partage (${slug})`).catch(() => {});
+    }
+    for(const imgPath of bodyImagePaths(data.bodyHTML)){
+      await ghDeleteFile(imgPath, `Chroniques : suppression image du texte (${slug})`).catch(() => {});
+    }
     await ghDeleteFile(`chroniques/sources/${slug}.json`, `Chroniques : suppression source (${slug})`).catch(() => {});
     setStatus('Article supprimé.');
     return true;
@@ -1014,6 +1092,7 @@ deleteBtn.addEventListener('click', async () => {
 /* ═══════════ Formulaire : nouvel article / charger un article ═══════════ */
 function resetForm(){
   currentArticle = null; currentCoverPath = null; pendingCoverBlob = null; pendingBodyImages = {};
+  pendingCoverExt = 'webp'; pendingCoverJpegBlob = null; pendingCoverW = 0; pendingCoverH = 0;
   titleInput.value = ''; slugInput.value = ''; slugTouched = false;
   summaryInput.value = ''; updateSummaryCount();
   coverAltInput.value = ''; coverPreview.hidden = true; coverPreviewImg.src = '';
@@ -1030,6 +1109,8 @@ async function openArticle(slug){
     const data = JSON.parse(base64ToUtf8(file.content));
     currentArticle = data;
     pendingCoverBlob = null; pendingBodyImages = {};
+    pendingCoverJpegBlob = null; pendingCoverExt = 'webp';
+    pendingCoverW = 0; pendingCoverH = 0;
     titleInput.value = data.title || ''; slugInput.value = data.slug || slug; slugTouched = true;
     summaryInput.value = data.summary || ''; updateSummaryCount();
     coverAltInput.value = data.coverAlt || '';
