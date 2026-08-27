@@ -789,7 +789,7 @@ ${ldJson}
     <h1>${escapeHtml(data.title)}</h1>
   </header>
   <figure class="post-cover reveal">
-    <span class="plaque" data-full="${coverUrl}"><img src="${coverUrl}" alt="${escapeHtml(data.coverAlt)}" loading="lazy" decoding="async"></span>
+    <span class="plaque" data-full="${coverUrl}"><img src="${coverUrl}" alt="${escapeHtml(data.coverAlt)}" decoding="async" fetchpriority="high"></span>
   </figure>
   <div class="post-body reveal" id="postBody">${data.bodyHTML}</div>
   <div class="post-foot reveal"><a href="../">← Retour aux Chroniques</a></div>
