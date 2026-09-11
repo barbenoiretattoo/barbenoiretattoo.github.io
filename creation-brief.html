@@ -114,13 +114,9 @@ footer .foot-brand em{color:var(--brass);font-style:normal}
   <p class="words-callout">Le concept repose sur <strong>vos mots, et vos mots seuls</strong>. Tout le reste (photo, commentaire) est facultatif, un simple bonus si vous avez envie de m'en dire plus.</p>
 
   <div class="form-main" id="formMain">
-    <form id="briefForm" action="https://api.web3forms.com/submit" method="POST">
-      <input type="hidden" name="access_key" value="4615c05b-42d4-44d8-a5c7-5fb5d5a17df0">
-      <input type="hidden" name="subject" value="Nouvelle création Barbe Noire Studio">
-      <input type="hidden" name="from_name" value="Formulaire Créations (barbenoiretattoo.com)">
+    <form id="briefForm">
       <input type="hidden" name="reference" id="referenceField" value="">
       <input type="hidden" name="offre" id="offerField" value="">
-      <input type="hidden" name="botcheck" style="display:none">
 
       <div class="field field-essential">
         <label for="wordsInput">Vos mots, l'essentiel (3 à 5)</label>
@@ -311,14 +307,20 @@ const briefForm = document.getElementById('briefForm');
 const submitBtn = document.getElementById('submitBtn');
 const formStatus = document.getElementById('formStatus');
 
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxDE8-MWVI919dkCGBBCZ4ixm4iVhoP7IwnLFp2KsYTEIbrJ_v_nC3Lvls4-0o6QQh4hg/exec';
+const FRAME_COLOR_FIELD_ID = 'frameColorInput'; // champ pas encore présent sur ce formulaire, sans effet si absent
+
+function blobToBase64(blob){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 briefForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const accessKey = briefForm.access_key.value;
-  if(!accessKey || accessKey.includes('TODO')){
-    formStatus.textContent = 'Le formulaire n’est pas encore configuré (clé Web3Forms à compléter dans creation-brief.html).';
-    formStatus.className = 'form-status error';
-    return;
-  }
   if(!offer.stripeLink || offer.stripeLink.includes('TODO')){
     formStatus.textContent = 'Le paiement en ligne n’est pas encore configuré pour cette offre (lien Stripe à compléter dans creation-brief.html).';
     formStatus.className = 'form-status error';
@@ -337,15 +339,43 @@ briefForm.addEventListener('submit', async (e) => {
   formStatus.textContent = 'Envoi de votre demande…';
   formStatus.className = 'form-status';
   try{
-    const res = await fetch(briefForm.action, { method: 'POST', body: new FormData(briefForm) });
+    const frameColorEl = document.getElementById(FRAME_COLOR_FIELD_ID);
+    const payload = {
+      reference: orderRef,
+      offre: offer.name,
+      mots_cles: wordsInput.value,
+      email: document.getElementById('emailInput').value,
+      commentaire: document.getElementById('commentInput').value,
+      nom_complet: document.getElementById('shipNameInput') ? document.getElementById('shipNameInput').value : '',
+      adresse: document.getElementById('shipAddressInput') ? document.getElementById('shipAddressInput').value : '',
+      complement_adresse: document.getElementById('shipAddress2Input') ? document.getElementById('shipAddress2Input').value : '',
+      code_postal: document.getElementById('shipZipInput') ? document.getElementById('shipZipInput').value : '',
+      ville: document.getElementById('shipCityInput') ? document.getElementById('shipCityInput').value : '',
+      pays: document.getElementById('shipCountryInput') ? document.getElementById('shipCountryInput').value : '',
+      couleur_cadre: frameColorEl ? frameColorEl.value : '',
+    };
+
+    if(pendingPhotos.length > 0){
+      const first = pendingPhotos[0];
+      payload.photo_base64 = await blobToBase64(first.blob);
+      payload.photo_filename = first.name;
+      payload.photo_mimetype = 'image/jpeg';
+    }
+
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
     const data = await res.json().catch(() => ({}));
-    if(res.ok && data.success !== false){
+
+    if(data.ok){
       try{ localStorage.setItem(ORDER_REF_KEY, JSON.stringify({ ref: orderRef, offer: offerKey, date: new Date().toISOString() })); }catch(err){}
       formStatus.textContent = 'C’est envoyé, redirection vers le paiement sécurisé…';
       formStatus.className = 'form-status success';
       window.location.href = `${offer.stripeLink}?client_reference_id=${encodeURIComponent(orderRef)}`;
     } else {
-      throw new Error(data.message || 'Erreur lors de l’envoi.');
+      throw new Error(data.error || 'Erreur lors de l’envoi.');
     }
   }catch(err){
     formStatus.textContent = 'Erreur : ' + err.message + '. Vous pouvez réessayer, ou m’écrire directement en message privé.';
