@@ -1,0 +1,25 @@
+name: Galerie
+on:
+  push:
+    branches: [main]
+    paths: ['photos/**']
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency: galerie
+jobs:
+  galerie:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/galerie.py
+      - run: |
+          git diff --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Galerie : liste des photos mise à jour"
+          git push
+          gh api -X POST repos/${{ github.repository }}/pages/builds  # reconstruction du site, au cas où le push du bot ne la déclenche pas
+        env:
+          GH_TOKEN: ${{ github.token }}
