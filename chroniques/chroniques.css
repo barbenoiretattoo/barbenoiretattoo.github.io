@@ -87,9 +87,14 @@ nav{
   transition:background .4s,border-color .4s,padding .4s;
   border-bottom:1px solid transparent;
 }
+/* Le flou est sur un calque : sur <nav>, il coinçait le menu mobile plein
+   écran dans la barre une fois la page défilée (voir index.html). */
+nav.scrolled::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
 nav.scrolled{
   background:rgba(11,13,16,.86);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-bottom-color:var(--line-soft);
   padding:15px 34px;
 }

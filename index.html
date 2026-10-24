@@ -323,9 +323,16 @@ nav{
 }
 nav.scrolled{
   background:rgba(11,13,16,.86);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-bottom-color:var(--line-soft);
   padding:15px 34px;
+}
+/* LE FLOU EST SUR UN CALQUE, PAS SUR LA BARRE. Un backdrop-filter sur <nav>
+   en fait le cadre de ses enfants en position fixe : sur mobile, une fois la
+   page défilée, le menu plein écran (.nav-links, inset:0) se retrouvait coincé
+   dans les 64 px de la barre, et la page restait bloquée (overflow:hidden). */
+nav.scrolled::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .nav-logo{
   font-family:var(--display);font-size:.98rem;
