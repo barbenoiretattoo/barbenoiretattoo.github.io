@@ -1,0 +1,25 @@
+name: Publication des chroniques
+on:
+  schedule:
+    - cron: "0 6 * * *"  # chaque matin ; publier.py ne fait rien si aucune date n'arrive
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency: publication
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/publier.py
+      - run: |
+          git add -A chroniques sitemap.xml .github/a-venir
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Chroniques : publication programmée"
+          git push
+          gh api -X POST repos/${{ github.repository }}/pages/builds  # reconstruction du site, au cas où le push du bot ne la déclenche pas
+        env:
+          GH_TOKEN: ${{ github.token }}
