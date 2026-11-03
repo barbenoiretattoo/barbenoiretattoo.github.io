@@ -265,7 +265,7 @@ footer .foot-brand em{color:var(--brass);font-style:normal}
 footer .foot-links{margin:20px 0 26px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
 footer .foot-links a,footer .foot-links button{background:none;border:none;color:var(--bone-dim);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;transition:color .3s;padding:2px 0}
 footer .foot-links a:hover,footer .foot-links button:hover{color:var(--brass)}
-footer .copyright{opacity:.7}
+footer .copyright{opacity:.85}
 
 .to-top{
   position:fixed;right:24px;bottom:24px;z-index:50;
