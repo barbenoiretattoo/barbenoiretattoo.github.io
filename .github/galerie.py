@@ -46,10 +46,14 @@ def normalize(folder):
 
 normalize(os.path.join(ROOT, 'photos'))
 names = sorted((n for n in os.listdir(os.path.join(ROOT, 'photos')) if IMG.search(n)), reverse=True)
+def size(n):  # largeur et hauteur réelles, déclarées dans la balise pour que la page ne bouge pas au chargement
+    with Image.open(os.path.join(ROOT, 'photos', n)) as im:
+        return ImageOps.exif_transpose(im).size
+
 items = [
     f'<button class="gallery-item" aria-label="Agrandir : {html.escape(alt(n))}">'
-    f'<img src="photos/{urllib.parse.quote(n)}" alt="{html.escape(alt(n))}" loading="lazy" decoding="async"></button>'
-    for n in names
+    f'<img src="photos/{urllib.parse.quote(n)}" alt="{html.escape(alt(n))}" width="{w}" height="{h}" loading="lazy" decoding="async"></button>'
+    for n in names for w, h in [size(n)]
 ] or ['<div class="gallery-empty" id="galleryEmpty">La galerie se prépare. Retrouvez en attendant tous mes travaux sur Instagram.</div>']
 
 path = os.path.join(ROOT, 'index.html')

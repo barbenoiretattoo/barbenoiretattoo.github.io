@@ -34,7 +34,8 @@ def date_fr(iso):
 def cartes(posts):
     blocs = []
     for p in sorted(posts, key=lambda x: x.get("date", ""), reverse=True):
-        img = f'<img src="{esc(p["cover"])}" alt="{esc(p.get("coverAlt") or p["title"])}" loading="lazy" decoding="async">'
+        dims = f' width="{p["coverWidth"]}" height="{p["coverHeight"]}"' if p.get("coverWidth") else ""
+        img = f'<img src="{esc(p["cover"])}" alt="{esc(p.get("coverAlt") or p["title"])}"{dims} loading="lazy" decoding="async">'
         lignes = [
             f'        <span class="plaque">{img}</span>',
             f'        <span class="plate article-date">{esc(date_fr(p["date"]))}</span>',
@@ -82,6 +83,7 @@ def publier(jour):
         posts = [p for p in posts if p["slug"] != slug] + [{
             "slug": slug, "title": src["title"], "summary": src["summary"], "date": date,
             "cover": f"{SITE}/{src['cover']}", "coverAlt": src["coverAlt"],
+            "coverWidth": src.get("coverWidth"), "coverHeight": src.get("coverHeight"),
         }]
         maj_sitemap(slug, date)
         shutil.rmtree(d)

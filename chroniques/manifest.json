@@ -5,7 +5,9 @@
     "summary": "Découvrez les avantages d'un tatouage personnalisé, dans un espace calme et intime à Mouvaux, près de Lille.",
     "date": "2026-08-09",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/pourquoi-choisir-un-cabinet-prive-de-tatouage-couverture.jpg",
-    "coverAlt": "Le cabinet privé de Barbe Noire Tattoo à Mouvaux : table de tatouage, fauteuil et lampe"
+    "coverAlt": "Le cabinet privé de Barbe Noire Tattoo à Mouvaux : table de tatouage, fauteuil et lampe",
+    "coverWidth": 1600,
+    "coverHeight": 1200
   },
   {
     "slug": "comment-bien-choisir-son-tatoueur-pour-un-projet-personnalise",
@@ -13,7 +15,9 @@
     "summary": "Découvrez les critères essentiels pour choisir votre tatoueur : style artistique, portfolio, inspirations, méthode de travail, feeling…",
     "date": "2026-08-25",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/comment-bien-choisir-son-tatoueur-pour-un-projet-personnalise-couverture.jpg",
-    "coverAlt": "Réalisation d’un tatouage sur mesure avec la cliente."
+    "coverAlt": "Réalisation d’un tatouage sur mesure avec la cliente.",
+    "coverWidth": 1380,
+    "coverHeight": 943
   },
   {
     "slug": "comment-bien-preparer-sa-seance-de-tatouage",
@@ -21,15 +25,19 @@
     "summary": "Découvrez comment bien préparer sa séance de tatouage : bien dormir, manger avant la séance, bien s’hydrater…",
     "date": "2026-09-12",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/comment-bien-preparer-sa-seance-de-tatouage-couverture.jpg",
-    "coverAlt": "Comment se préparer avant une séance de tatouage."
+    "coverAlt": "Comment se préparer avant une séance de tatouage.",
+    "coverWidth": 1536,
+    "coverHeight": 1024
   },
   {
     "slug": "comment-bien-cicatriser-son-tatouage",
     "title": "Comment bien cicatriser son tatouage ?",
-    "summary": "La cicatrisation d’un tatouage est une étape importante après une séance. Découvrez les conseils de Barbe Noire Tattoo pour prendre soin de votre tatouage : crème cicatrisante, nettoyage, douche, frottements, soleil, durée des soins…",
+    "summary": "Les conseils de Barbe Noire Tattoo pour bien cicatriser votre tatouage : nettoyage, crème, douche, soleil et frottements.",
     "date": "2026-10-07",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/comment-bien-cicatriser-son-tatouage-couverture.jpg",
-    "coverAlt": "Cicatrisation d’un tatouage"
+    "coverAlt": "Cicatrisation d’un tatouage",
+    "coverWidth": 1536,
+    "coverHeight": 1024
   },
   {
     "slug": "tatouage-quelle-zone-fait-le-moins-mal",
@@ -37,7 +45,9 @@
     "summary": "Avant-bras, côtes, pieds, colonne : quelles zones font le plus ou le moins mal à tatouer ? Les conseils de Barbe Noire Tattoo, tatoueur à Mouvaux près de Lille.",
     "date": "2026-10-24",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/tatouage-quelle-zone-fait-le-moins-mal-couverture.webp",
-    "coverAlt": "Une cliente fait une pause et boit un verre d'eau pendant sa séance, le stencil de son tatouage sur le bras, au cabinet de Barbe Noire Tattoo"
+    "coverAlt": "Une cliente fait une pause et boit un verre d'eau pendant sa séance, le stencil de son tatouage sur le bras, au cabinet de Barbe Noire Tattoo",
+    "coverWidth": 1448,
+    "coverHeight": 965
   },
   {
     "slug": "le-tatouage-fine-line-vieillit-il-mal",
@@ -45,7 +55,9 @@
     "summary": "Le fine line tient-il dans le temps ? Barbe Noire Tattoo, tatoueur à Mouvaux près de Lille, vous explique comment garder un tatouage à lignes fines net.",
     "date": "2026-10-30",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/le-tatouage-fine-line-vieillit-il-mal-couverture.webp",
-    "coverAlt": "Tatouage fine line rose des vents sur l’avant-bras, réalisé par Barbe Noire Tattoo à Mouvaux"
+    "coverAlt": "Tatouage fine line rose des vents sur l’avant-bras, réalisé par Barbe Noire Tattoo à Mouvaux",
+    "coverWidth": 1200,
+    "coverHeight": 800
   },
   {
     "slug": "le-handpoke-c-est-quoi",
@@ -53,6 +65,8 @@
     "summary": "Le handpoke, c’est le tatouage à la main, sans machine, point par point. Barbe Noire Tattoo vous explique comment il se pratique à Mouvaux, près de Lille.",
     "date": "2026-11-09",
     "cover": "https://www.barbenoiretattoo.com/chroniques/images/le-handpoke-c-est-quoi-couverture.webp",
-    "coverAlt": "Le cabinet de Barbe Noire Tattoo à Mouvaux, où se pratique le tatouage handpoke"
+    "coverAlt": "Le cabinet de Barbe Noire Tattoo à Mouvaux, où se pratique le tatouage handpoke",
+    "coverWidth": 1200,
+    "coverHeight": 800
   }
 ]

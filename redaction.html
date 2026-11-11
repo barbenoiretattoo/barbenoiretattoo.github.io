@@ -855,7 +855,7 @@ ${ldJson}
     <h1>${escapeHtml(data.title)}</h1>
   </header>
   <figure class="post-cover reveal">
-    <span class="plaque" data-full="${coverUrl}"><img src="${coverUrl}" alt="${escapeHtml(data.coverAlt)}" decoding="async" fetchpriority="high"></span>
+    <span class="plaque" data-full="${coverUrl}"><img src="${coverUrl}" alt="${escapeHtml(data.coverAlt)}"${data.coverWidth ? ` width="${data.coverWidth}" height="${data.coverHeight}"` : ''} decoding="async" fetchpriority="high"></span>
   </figure>
   <div class="post-body reveal" id="postBody">${data.bodyHTML}</div>
   <div class="post-foot reveal"><a href="../">← Retour aux Chroniques</a></div>
@@ -938,7 +938,7 @@ function renderArticleCardsHTML(posts){
 
   return list.map(post => {
     const img = post.cover
-      ? `<img src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.coverAlt || post.title || '')}" loading="lazy" decoding="async">`
+      ? `<img src="${escapeHtml(post.cover)}" alt="${escapeHtml(post.coverAlt || post.title || '')}"${post.coverWidth ? ` width="${post.coverWidth}" height="${post.coverHeight}"` : ''} loading="lazy" decoding="async">`
       : '';
     const lines = [
       `        <span class="plaque">${img}</span>`,
@@ -1060,7 +1060,7 @@ async function publish(){
     await ghUpsertFile(`chroniques/${v.slug}/index.html`, utf8ToBase64(html), `Chroniques : publication « ${v.title} »`);
 
     setStatus('Mise à jour de la liste des articles…');
-    const posts = await updateManifest({ slug: v.slug, title: v.title, summary, date: dateISO, cover: currentCoverPath ? toSiteUrl(currentCoverPath) : '', coverAlt });
+    const posts = await updateManifest({ slug: v.slug, title: v.title, summary, date: dateISO, cover: currentCoverPath ? toSiteUrl(currentCoverPath) : '', coverAlt, coverWidth: coverW, coverHeight: coverH });
 
     setStatus('Mise à jour de la page Chroniques…');
     await updateChroniquesIndex(posts);

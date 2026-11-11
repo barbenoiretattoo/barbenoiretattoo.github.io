@@ -262,8 +262,8 @@ section.blog-list{padding:100px 0 140px}
 footer{border-top:1px solid var(--line-soft);padding:56px 28px 40px;text-align:center;color:var(--bone-dim);font-size:.68rem;letter-spacing:.22em}
 footer .foot-brand{font-family:var(--display);font-size:1rem;letter-spacing:.34em;text-transform:uppercase;color:var(--bone);margin-bottom:18px}
 footer .foot-brand em{color:var(--brass);font-style:normal}
-footer .foot-links{margin:20px 0 26px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
-footer .foot-links a,footer .foot-links button{background:none;border:none;color:var(--bone-dim);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;transition:color .3s;padding:2px 0}
+footer .foot-links{margin:12px 0 18px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
+footer .foot-links a,footer .foot-links button{background:none;border:none;color:var(--bone-dim);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;transition:color .3s;padding:10px 0}
 footer .foot-links a:hover,footer .foot-links button:hover{color:var(--brass)}
 footer .copyright{opacity:.85}
 
